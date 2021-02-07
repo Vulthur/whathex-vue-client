@@ -1,15 +1,21 @@
 <template>
   <div id="test">
-    <h1>My Todo App!</h1>
+    <h1>{{ message }}</h1>
   </div>
 </template>
 
 <style>
   #test {
-    color: red;
+    color: blue;
   }
 </style>
 
 <script>
-export default {};
+  export default {
+    data() {
+      return {
+        message: 'Hello Vue !'
+      }
+    }
+  };
 </script>
