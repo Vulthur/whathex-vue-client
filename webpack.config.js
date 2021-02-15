@@ -1,7 +1,7 @@
 const path = require('path')
 
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin'); 
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
@@ -29,21 +29,19 @@ module.exports = {
       {
         test: /\.vue$/,
         loader: 'vue-loader'
-      },
-      // this will apply to both plain `.js` files
-      // AND `<script>` blocks in `.vue` files
-      {
+      },{
         test: /\.js$/,
         loader: 'babel-loader'
-      },
-      // this will apply to both plain `.css` files
-      // AND `<style>` blocks in `.vue` files
-      {
-        test: /\.css$/,
+      },{
+        test: /\.scss$/,
         use: [
           'vue-style-loader',
-          { loader: 'css-loader', options: { esModule: false }}
+          { loader: 'css-loader', options: { esModule: false }},
+          { loader: 'sass-loader', options: {}}
         ]
+      },{
+        test: /\.(png|jpg)$/,
+        loader: 'url-loader'
       }
     ]
   },

@@ -3,6 +3,10 @@ import App from './components/App'
 
 Vue.config.productionTip = false
 
+const EventBus = new Vue()
+
+export { EventBus }
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
