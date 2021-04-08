@@ -16,6 +16,7 @@
           :currentCell=currentCell>
         </production>
         <control
+          :stocks="data.stocks"
           :currentCell=currentCell>
         </control>
       </div>
@@ -78,8 +79,12 @@
     font-weight: 900;
     color: white;
   }
-  button:hover {
+  button:hover:enabled {
     background: rgb(67, 123, 228);
+  }
+  button:disabled {
+    background: rgb(145, 162, 193);
+    cursor: default;
   }
   button:focus {
     outline:0;

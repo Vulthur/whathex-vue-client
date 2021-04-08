@@ -5,7 +5,7 @@
         :style="{
           'border-color': getHexagoneColor(currentCell.soil)
         }">
-      <div id="soil-name">{{ soil.name.toUpperCase() }}</div>
+      <div id="header-name">{{ soil.name.toUpperCase() }}</div>
       <div class="properties">
         <div class="property">
           <span>MOVE SPEED :</span>
@@ -121,7 +121,11 @@
         v-if="currentCell && buildables.length">
       <div id="header-name">BUILDABLES</div>
       <div class="properties">
+        <div class="property" v-for="(product, index) in buildables" :key="`buildable-${index}`">
+          <button disabled>{{ `${product.toUpperCase()}` }}</button>
+        </div>
       </div>
+      {{ stocks }}
     </div>
   </div>
 </template>
@@ -132,12 +136,16 @@ import { getHexagoneColor } from '../common'
 export default {
   name: "controls",
   props: {
-    currentCell: Object
+    currentCell: Object,
+    stocks: Object
   },
   methods: {
     getHexagoneColor (soil) {
       return getHexagoneColor(soil)
     },
+    canBuild (buildable) {
+      
+    }
   },
   computed: {
     soil () {
