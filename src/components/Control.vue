@@ -45,14 +45,14 @@
         </div>
         <div class="property" v-for="(income, key, index) in soil.incomes" :key="`soil-income-${index}`">
           <span>{{ `${key.toUpperCase()} :` }}</span>
-          <span>{{ `${income.production}` }}</span>
+          <span>{{ `${income.value}` }}</span>
         </div>
         <div class="property" v-if="Object.keys(soil.resources).length">
           <span class="title-property">RESSOURCES</span>
         </div>
         <div class="property" v-for="(ressource, key, index) in soil.resources" :key="`ressource-${index}`">
           <span>{{ `${key.toUpperCase()} :` }}</span>
-          <span>{{ `${ressource.production}` }}</span>
+          <span>{{ `${ressource.value}` }}</span>
         </div>
       </div>
     </div>
@@ -106,14 +106,14 @@
         </div>
         <div class="property" v-for="(income, key, index) in building.incomes" :key="`build-income-${index}`">
           <span>{{ `${key.toUpperCase()} :` }}</span>
-          <span>{{ `${income.production}` }}</span>
+          <span>{{ `${income.value}` }}</span>
         </div>
         <div class="property" v-if="Object.keys(building.incomes).length">
           <span>INCOMES</span>
         </div>
-        <div class="property" v-for="(income, key, index) in building.incomes" :key="`build-income-${index}`">
+        <div class="property" v-for="(income, key, index) in building.incomes" :key="`building-income-${index}`">
           <span>{{ `${key.toUpperCase()} :` }}</span>
-          <span>{{ `${income.production}` }}</span>
+          <span>{{ `${income.value}` }}</span>
         </div>
       </div>
     </div>
@@ -121,11 +121,11 @@
         v-if="currentCell && buildables.length">
       <div id="header-name">BUILDABLES</div>
       <div class="properties">
-        <div class="property" v-for="(product, index) in buildables" :key="`buildable-${index}`">
-          <button disabled>{{ `${product.toUpperCase()}` }}</button>
+        <div class="property" v-for="(buildable, index) in buildables" :key="`buildable-${index}`">
+          <button @click="build(buildable)"
+            :disabled="!canBuild(buildable)">{{ `${buildable.toUpperCase()}` }}</button>
         </div>
       </div>
-      {{ stocks }}
     </div>
   </div>
 </template>
@@ -137,14 +137,30 @@ export default {
   name: "controls",
   props: {
     currentCell: Object,
-    stocks: Object
+    stocks: Object,
+    gameData: Object,
+    socket: Object
   },
   methods: {
     getHexagoneColor (soil) {
       return getHexagoneColor(soil)
     },
     canBuild (buildable) {
-      
+      for (let ressource in this.gameData.buildables[buildable].cost) {
+        this.gameData.buildables[buildable].cost[ressource]
+        if (this.gameData.buildables[buildable].cost[ressource].value > this.stocks[ressource].value) {
+          return false
+        }
+      }
+      return true
+    },
+    build (building) {
+      console.log(this.currentCell)
+      this.socket.emit("action", {
+        "uuid": this.gameData.uuid,
+        "building_uid": building,
+        "cell_id": this.currentCell.index
+      })
     }
   },
   computed: {

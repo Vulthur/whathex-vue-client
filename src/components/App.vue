@@ -1,14 +1,14 @@
 <template>
   <div id="app" tabindex="0"
       @keyup.space="goToCapital()">
-    <header-bar
-      :stocks="data.stocks"
+    <header-bar v-if="playerData"
+      :stocks="playerData.stocks"
     ></header-bar>
-    <div id="game" v-if="data">
+    <div id="game" v-if="playerData">
       <div id="central">
         <board
-          :mappedCells="data.mapped_cells"
-          :capital="data.capital"
+          :mappedCells="playerData.mapped_cells"
+          :capital="playerData.capital"
           :currentCell=currentCell
           :map="map"
         ></board>
@@ -16,7 +16,9 @@
           :currentCell=currentCell>
         </production>
         <control
-          :stocks="data.stocks"
+          :stocks="playerData.stocks"
+          :gameData="gameData"
+          :socket="socket"
           :currentCell=currentCell>
         </control>
       </div>
@@ -93,6 +95,7 @@
 
 <script>
   import data from "../data"
+  import gameData from "../gameData"
   import { EventBus } from "../index"
 
   import HeaderBar from "./HeaderBar.vue"
@@ -114,7 +117,8 @@
     },
     data() {
       return {
-        data: data,
+        playerData: null,
+        gameData: null,
         map: {
           x: 20,
           y: 20,
@@ -149,7 +153,11 @@
           this.message = event.message
         })
         this.socket.on('player', (data) => {
-          this.data = data
+          this.playerData = data
+        })
+        this.socket.on('game-data', (data) => {
+          console.log(data)
+          this.gameData = data
         })
       },
       play () {

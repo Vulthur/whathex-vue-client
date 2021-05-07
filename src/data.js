@@ -22,24 +22,24 @@ export default {
                     "Wood": {
                         "symbol": "W",
                         "name": "Wood",
-                        "production": 1
+                        "value": 1
                     },
                     "Food": {
                         "symbol": "F",
                         "name": "Food",
-                        "production": 2
+                        "value": 2
                     }
                 },
                 "resources": {
                     "Wood": {
                         "symbol": "W",
                         "name": "Wood",
-                        "production": 100
+                        "value": 100
                     },
                     "Food": {
                         "symbol": "F",
                         "name": "Food",
-                        "production": 200
+                        "value": 200
                     }
                 }
             },
@@ -52,17 +52,17 @@ export default {
                     "Stone": {
                         "symbol": "S",
                         "name": "Stone",
-                        "production": 50
+                        "value": 50
                     },
                     "Wood": {
                         "symbol": "S",
                         "name": "Stone",
-                        "production": 50
+                        "value": 50
                     },
                     "Food": {
                         "symbol": "F",
                         "name": "Food",
-                        "production": 50
+                        "value": 50
                     }
                 },
                 "name": "Capital",
@@ -70,12 +70,12 @@ export default {
                     "Food": {
                         "symbol": "F",
                         "name": "Food",
-                        "production": 5
+                        "value": 5
                     },
                     "Wood": {
                         "symbol": "W",
                         "name": "Wood",
-                        "production": 1
+                        "value": 1
                     }
                 },
                 "move_speed": 0,
@@ -107,17 +107,17 @@ export default {
                             "Wood": {
                                 "symbol": "W",
                                 "name": "Wood",
-                                "production": 2
+                                "value": 2
                             },
                             "Stone": {
                                 "symbol": "S",
                                 "name": "Stone",
-                                "production": 0
+                                "value": 0
                             },
                             "Food": {
                                 "symbol": "F",
                                 "name": "Food",
-                                "production": 4
+                                "value": 4
                             }
                         },
                         "id": "1ec0375d-ec0c-4dca-ae33-1cf5dab39291",
@@ -145,17 +145,17 @@ export default {
                             "Wood": {
                                 "symbol": "W",
                                 "name": "Wood",
-                                "production": 1
+                                "value": 1
                             },
                             "Stone": {
                                 "symbol": "S",
                                 "name": "Stone",
-                                "production": 1
+                                "value": 1
                             },
                             "Food": {
                                 "symbol": "F",
                                 "name": "Food",
-                                "production": 3
+                                "value": 3
                             }
                         },
                         "id": "9f9779a8-501e-48ee-85d9-e54a01969c6a",
@@ -165,17 +165,17 @@ export default {
                             "Wood": {
                                 "symbol": "W",
                                 "name": "Wood",
-                                "production": 1
+                                "value": 1
                             },
                             "Stone": {
                                 "symbol": "S",
                                 "name": "Stone",
-                                "production": 1
+                                "value": 1
                             },
                             "Food": {
                                 "symbol": "F",
                                 "name": "Food",
-                                "production": 3
+                                "value": 3
                             }
                         },
                         "production_value": 3
@@ -186,17 +186,17 @@ export default {
                             "Wood": {
                                 "symbol": "W",
                                 "name": "Wood",
-                                "production": 1
+                                "value": 1
                             },
                             "Stone": {
                                 "symbol": "S",
                                 "name": "Stone",
-                                "production": 1
+                                "value": 1
                             },
                             "Food": {
                                 "symbol": "F",
                                 "name": "Food",
-                                "production": 3
+                                "value": 3
                             }
                         },
                         "id": "cb075da1-b9b7-4ddc-b37c-d86381ae251c",
@@ -206,17 +206,17 @@ export default {
                             "Wood": {
                                 "symbol": "W",
                                 "name": "Wood",
-                                "production": 1
+                                "value": 1
                             },
                             "Stone": {
                                 "symbol": "S",
                                 "name": "Stone",
-                                "production": 1
+                                "value": 1
                             },
                             "Food": {
                                 "symbol": "F",
                                 "name": "Food",
-                                "production": 3
+                                "value": 3
                             }
                         },
                         "production_value": 3
@@ -227,17 +227,17 @@ export default {
                             "Wood": {
                                 "symbol": "W",
                                 "name": "Wood",
-                                "production": 2
+                                "value": 2
                             },
                             "Stone": {
                                 "symbol": "S",
                                 "name": "Stone",
-                                "production": 2
+                                "value": 2
                             },
                             "Food": {
                                 "symbol": "F",
                                 "name": "Food",
-                                "production": 3
+                                "value": 3
                             }
                         },
                         "id": "1da2924d-c585-4b4b-be6d-77a8ae847830",
@@ -247,17 +247,17 @@ export default {
                             "Wood": {
                                 "symbol": "W",
                                 "name": "Wood",
-                                "production": 1
+                                "value": 1
                             },
                             "Stone": {
                                 "symbol": "S",
                                 "name": "Stone",
-                                "production": 1
+                                "value": 1
                             },
                             "Food": {
                                 "symbol": "F",
                                 "name": "Food",
-                                "production": 1
+                                "value": 1
                             }
                         },
                         "production_value": 3
@@ -283,14 +283,14 @@ export default {
                     "Food": {
                         "symbol": "F",
                         "name": "Food",
-                        "production": 3
+                        "value": 3
                     }
                 },
                 "resources": {
                     "Food": {
                         "symbol": "F",
                         "name": "Food",
-                        "production": 600
+                        "value": 600
                     }
                 }
             },
@@ -324,24 +324,24 @@ export default {
                     "Wood": {
                         "symbol": "W",
                         "name": "Wood",
-                        "production": 1
+                        "value": 1
                     },
                     "Food": {
                         "symbol": "F",
                         "name": "Food",
-                        "production": 2
+                        "value": 2
                     }
                 },
                 "resources": {
                     "Wood": {
                         "symbol": "W",
                         "name": "Wood",
-                        "production": 100
+                        "value": 100
                     },
                     "Food": {
                         "symbol": "F",
                         "name": "Food",
-                        "production": 200
+                        "value": 200
                     }
                 }
             },
@@ -375,24 +375,24 @@ export default {
                     "Wood": {
                         "symbol": "W",
                         "name": "Wood",
-                        "production": 1
+                        "value": 1
                     },
                     "Food": {
                         "symbol": "F",
                         "name": "Food",
-                        "production": 2
+                        "value": 2
                     }
                 },
                 "resources": {
                     "Wood": {
                         "symbol": "W",
                         "name": "Wood",
-                        "production": 100
+                        "value": 100
                     },
                     "Food": {
                         "symbol": "F",
                         "name": "Food",
-                        "production": 200
+                        "value": 200
                     }
                 }
             },
@@ -478,14 +478,14 @@ export default {
                     "Food": {
                         "symbol": "F",
                         "name": "Food",
-                        "production": 1
+                        "value": 1
                     }
                 },
                 "resources": {
                     "Food": {
                         "symbol": "F",
                         "name": "Food",
-                        "production": 200
+                        "value": 200
                     }
                 }
             },
@@ -521,24 +521,24 @@ export default {
                     "Wood": {
                         "symbol": "W",
                         "name": "Wood",
-                        "production": 1
+                        "value": 1
                     },
                     "Food": {
                         "symbol": "F",
                         "name": "Food",
-                        "production": 2
+                        "value": 2
                     }
                 },
                 "resources": {
                     "Wood": {
                         "symbol": "W",
                         "name": "Wood",
-                        "production": 100
+                        "value": 100
                     },
                     "Food": {
                         "symbol": "F",
                         "name": "Food",
-                        "production": 200
+                        "value": 200
                     }
                 }
             },
@@ -551,17 +551,17 @@ export default {
                     "Stone": {
                         "symbol": "S",
                         "name": "Stone",
-                        "production": 50
+                        "value": 50
                     },
                     "Wood": {
                         "symbol": "S",
                         "name": "Stone",
-                        "production": 50
+                        "value": 50
                     },
                     "Food": {
                         "symbol": "F",
                         "name": "Food",
-                        "production": 50
+                        "value": 50
                     }
                 },
                 "name": "Capital",
@@ -569,12 +569,12 @@ export default {
                     "Food": {
                         "symbol": "F",
                         "name": "Food",
-                        "production": 5
+                        "value": 5
                     },
                     "Wood": {
                         "symbol": "W",
                         "name": "Wood",
-                        "production": 1
+                        "value": 1
                     }
                 },
                 "move_speed": 0,
@@ -606,17 +606,17 @@ export default {
                             "Wood": {
                                 "symbol": "W",
                                 "name": "Wood",
-                                "production": 2
+                                "value": 2
                             },
                             "Stone": {
                                 "symbol": "S",
                                 "name": "Stone",
-                                "production": 0
+                                "value": 0
                             },
                             "Food": {
                                 "symbol": "F",
                                 "name": "Food",
-                                "production": 4
+                                "value": 4
                             }
                         },
                         "id": "1ec0375d-ec0c-4dca-ae33-1cf5dab39291",
@@ -644,17 +644,17 @@ export default {
                             "Wood": {
                                 "symbol": "W",
                                 "name": "Wood",
-                                "production": 1
+                                "value": 1
                             },
                             "Stone": {
                                 "symbol": "S",
                                 "name": "Stone",
-                                "production": 1
+                                "value": 1
                             },
                             "Food": {
                                 "symbol": "F",
                                 "name": "Food",
-                                "production": 3
+                                "value": 3
                             }
                         },
                         "id": "9f9779a8-501e-48ee-85d9-e54a01969c6a",
@@ -664,17 +664,17 @@ export default {
                             "Wood": {
                                 "symbol": "W",
                                 "name": "Wood",
-                                "production": 1
+                                "value": 1
                             },
                             "Stone": {
                                 "symbol": "S",
                                 "name": "Stone",
-                                "production": 1
+                                "value": 1
                             },
                             "Food": {
                                 "symbol": "F",
                                 "name": "Food",
-                                "production": 3
+                                "value": 3
                             }
                         },
                         "production_value": 3
@@ -685,17 +685,17 @@ export default {
                             "Wood": {
                                 "symbol": "W",
                                 "name": "Wood",
-                                "production": 1
+                                "value": 1
                             },
                             "Stone": {
                                 "symbol": "S",
                                 "name": "Stone",
-                                "production": 1
+                                "value": 1
                             },
                             "Food": {
                                 "symbol": "F",
                                 "name": "Food",
-                                "production": 3
+                                "value": 3
                             }
                         },
                         "id": "cb075da1-b9b7-4ddc-b37c-d86381ae251c",
@@ -705,17 +705,17 @@ export default {
                             "Wood": {
                                 "symbol": "W",
                                 "name": "Wood",
-                                "production": 1
+                                "value": 1
                             },
                             "Stone": {
                                 "symbol": "S",
                                 "name": "Stone",
-                                "production": 1
+                                "value": 1
                             },
                             "Food": {
                                 "symbol": "F",
                                 "name": "Food",
-                                "production": 3
+                                "value": 3
                             }
                         },
                         "production_value": 3
@@ -726,17 +726,17 @@ export default {
                             "Wood": {
                                 "symbol": "W",
                                 "name": "Wood",
-                                "production": 2
+                                "value": 2
                             },
                             "Stone": {
                                 "symbol": "S",
                                 "name": "Stone",
-                                "production": 2
+                                "value": 2
                             },
                             "Food": {
                                 "symbol": "F",
                                 "name": "Food",
-                                "production": 3
+                                "value": 3
                             }
                         },
                         "id": "1da2924d-c585-4b4b-be6d-77a8ae847830",
@@ -746,17 +746,17 @@ export default {
                             "Wood": {
                                 "symbol": "W",
                                 "name": "Wood",
-                                "production": 1
+                                "value": 1
                             },
                             "Stone": {
                                 "symbol": "S",
                                 "name": "Stone",
-                                "production": 1
+                                "value": 1
                             },
                             "Food": {
                                 "symbol": "F",
                                 "name": "Food",
-                                "production": 1
+                                "value": 1
                             }
                         },
                         "production_value": 3
@@ -786,24 +786,24 @@ export default {
                     "Wood": {
                         "symbol": "W",
                         "name": "Wood",
-                        "production": 1
+                        "value": 1
                     },
                     "Food": {
                         "symbol": "F",
                         "name": "Food",
-                        "production": 2
+                        "value": 2
                     }
                 },
                 "resources": {
                     "Wood": {
                         "symbol": "W",
                         "name": "Wood",
-                        "production": 100
+                        "value": 100
                     },
                     "Food": {
                         "symbol": "F",
                         "name": "Food",
-                        "production": 200
+                        "value": 200
                     }
                 }
             },
@@ -816,17 +816,17 @@ export default {
                     "Stone": {
                         "symbol": "S",
                         "name": "Stone",
-                        "production": 50
+                        "value": 50
                     },
                     "Wood": {
                         "symbol": "S",
                         "name": "Stone",
-                        "production": 50
+                        "value": 50
                     },
                     "Food": {
                         "symbol": "F",
                         "name": "Food",
-                        "production": 50
+                        "value": 50
                     }
                 },
                 "name": "Capital",
@@ -834,12 +834,12 @@ export default {
                     "Food": {
                         "symbol": "F",
                         "name": "Food",
-                        "production": 5
+                        "value": 5
                     },
                     "Wood": {
                         "symbol": "W",
                         "name": "Wood",
-                        "production": 1
+                        "value": 1
                     }
                 },
                 "move_speed": 0,
@@ -871,17 +871,17 @@ export default {
                             "Wood": {
                                 "symbol": "W",
                                 "name": "Wood",
-                                "production": 2
+                                "value": 2
                             },
                             "Stone": {
                                 "symbol": "S",
                                 "name": "Stone",
-                                "production": 0
+                                "value": 0
                             },
                             "Food": {
                                 "symbol": "F",
                                 "name": "Food",
-                                "production": 4
+                                "value": 4
                             }
                         },
                         "id": "1ec0375d-ec0c-4dca-ae33-1cf5dab39291",
@@ -909,17 +909,17 @@ export default {
                             "Wood": {
                                 "symbol": "W",
                                 "name": "Wood",
-                                "production": 1
+                                "value": 1
                             },
                             "Stone": {
                                 "symbol": "S",
                                 "name": "Stone",
-                                "production": 1
+                                "value": 1
                             },
                             "Food": {
                                 "symbol": "F",
                                 "name": "Food",
-                                "production": 3
+                                "value": 3
                             }
                         },
                         "id": "9f9779a8-501e-48ee-85d9-e54a01969c6a",
@@ -929,17 +929,17 @@ export default {
                             "Wood": {
                                 "symbol": "W",
                                 "name": "Wood",
-                                "production": 1
+                                "value": 1
                             },
                             "Stone": {
                                 "symbol": "S",
                                 "name": "Stone",
-                                "production": 1
+                                "value": 1
                             },
                             "Food": {
                                 "symbol": "F",
                                 "name": "Food",
-                                "production": 3
+                                "value": 3
                             }
                         },
                         "production_value": 3
@@ -950,17 +950,17 @@ export default {
                             "Wood": {
                                 "symbol": "W",
                                 "name": "Wood",
-                                "production": 1
+                                "value": 1
                             },
                             "Stone": {
                                 "symbol": "S",
                                 "name": "Stone",
-                                "production": 1
+                                "value": 1
                             },
                             "Food": {
                                 "symbol": "F",
                                 "name": "Food",
-                                "production": 3
+                                "value": 3
                             }
                         },
                         "id": "cb075da1-b9b7-4ddc-b37c-d86381ae251c",
@@ -970,17 +970,17 @@ export default {
                             "Wood": {
                                 "symbol": "W",
                                 "name": "Wood",
-                                "production": 1
+                                "value": 1
                             },
                             "Stone": {
                                 "symbol": "S",
                                 "name": "Stone",
-                                "production": 1
+                                "value": 1
                             },
                             "Food": {
                                 "symbol": "F",
                                 "name": "Food",
-                                "production": 3
+                                "value": 3
                             }
                         },
                         "production_value": 3
@@ -991,17 +991,17 @@ export default {
                             "Wood": {
                                 "symbol": "W",
                                 "name": "Wood",
-                                "production": 2
+                                "value": 2
                             },
                             "Stone": {
                                 "symbol": "S",
                                 "name": "Stone",
-                                "production": 2
+                                "value": 2
                             },
                             "Food": {
                                 "symbol": "F",
                                 "name": "Food",
-                                "production": 3
+                                "value": 3
                             }
                         },
                         "id": "1da2924d-c585-4b4b-be6d-77a8ae847830",
@@ -1011,17 +1011,17 @@ export default {
                             "Wood": {
                                 "symbol": "W",
                                 "name": "Wood",
-                                "production": 1
+                                "value": 1
                             },
                             "Stone": {
                                 "symbol": "S",
                                 "name": "Stone",
-                                "production": 1
+                                "value": 1
                             },
                             "Food": {
                                 "symbol": "F",
                                 "name": "Food",
-                                "production": 1
+                                "value": 1
                             }
                         },
                         "production_value": 3
@@ -1047,14 +1047,14 @@ export default {
                     "Food": {
                         "symbol": "F",
                         "name": "Food",
-                        "production": 3
+                        "value": 3
                     }
                 },
                 "resources": {
                     "Food": {
                         "symbol": "F",
                         "name": "Food",
-                        "production": 600
+                        "value": 600
                     }
                 }
             },
@@ -1088,24 +1088,24 @@ export default {
                     "Wood": {
                         "symbol": "W",
                         "name": "Wood",
-                        "production": 1
+                        "value": 1
                     },
                     "Food": {
                         "symbol": "F",
                         "name": "Food",
-                        "production": 2
+                        "value": 2
                     }
                 },
                 "resources": {
                     "Wood": {
                         "symbol": "W",
                         "name": "Wood",
-                        "production": 100
+                        "value": 100
                     },
                     "Food": {
                         "symbol": "F",
                         "name": "Food",
-                        "production": 200
+                        "value": 200
                     }
                 }
             },
@@ -1139,24 +1139,24 @@ export default {
                     "Wood": {
                         "symbol": "W",
                         "name": "Wood",
-                        "production": 1
+                        "value": 1
                     },
                     "Food": {
                         "symbol": "F",
                         "name": "Food",
-                        "production": 2
+                        "value": 2
                     }
                 },
                 "resources": {
                     "Wood": {
                         "symbol": "W",
                         "name": "Wood",
-                        "production": 100
+                        "value": 100
                     },
                     "Food": {
                         "symbol": "F",
                         "name": "Food",
-                        "production": 200
+                        "value": 200
                     }
                 }
             },
@@ -1242,14 +1242,14 @@ export default {
                     "Food": {
                         "symbol": "F",
                         "name": "Food",
-                        "production": 1
+                        "value": 1
                     }
                 },
                 "resources": {
                     "Food": {
                         "symbol": "F",
                         "name": "Food",
-                        "production": 200
+                        "value": 200
                     }
                 }
             },
@@ -1289,24 +1289,24 @@ export default {
                 "Wood": {
                     "symbol": "W",
                     "name": "Wood",
-                    "production": 1
+                    "value": 1
                 },
                 "Food": {
                     "symbol": "F",
                     "name": "Food",
-                    "production": 2
+                    "value": 2
                 }
             },
             "resources": {
                 "Wood": {
                     "symbol": "W",
                     "name": "Wood",
-                    "production": 100
+                    "value": 100
                 },
                 "Food": {
                     "symbol": "F",
                     "name": "Food",
-                    "production": 200
+                    "value": 200
                 }
             }
         },
@@ -1319,17 +1319,17 @@ export default {
                 "Stone": {
                     "symbol": "S",
                     "name": "Stone",
-                    "production": 50
+                    "value": 50
                 },
                 "Wood": {
                     "symbol": "S",
                     "name": "Stone",
-                    "production": 50
+                    "value": 50
                 },
                 "Food": {
                     "symbol": "F",
                     "name": "Food",
-                    "production": 50
+                    "value": 50
                 }
             },
             "name": "Capital",
@@ -1337,12 +1337,12 @@ export default {
                 "Food": {
                     "symbol": "F",
                     "name": "Food",
-                    "production": 5
+                    "value": 5
                 },
                 "Wood": {
                     "symbol": "W",
                     "name": "Wood",
-                    "production": 1
+                    "value": 1
                 }
             },
             "move_speed": 0,
@@ -1374,17 +1374,17 @@ export default {
                         "Wood": {
                             "symbol": "W",
                             "name": "Wood",
-                            "production": 2
+                            "value": 2
                         },
                         "Stone": {
                             "symbol": "S",
                             "name": "Stone",
-                            "production": 0
+                            "value": 0
                         },
                         "Food": {
                             "symbol": "F",
                             "name": "Food",
-                            "production": 4
+                            "value": 4
                         }
                     },
                     "id": "1ec0375d-ec0c-4dca-ae33-1cf5dab39291",
@@ -1412,17 +1412,17 @@ export default {
                         "Wood": {
                             "symbol": "W",
                             "name": "Wood",
-                            "production": 1
+                            "value": 1
                         },
                         "Stone": {
                             "symbol": "S",
                             "name": "Stone",
-                            "production": 1
+                            "value": 1
                         },
                         "Food": {
                             "symbol": "F",
                             "name": "Food",
-                            "production": 3
+                            "value": 3
                         }
                     },
                     "id": "9f9779a8-501e-48ee-85d9-e54a01969c6a",
@@ -1432,17 +1432,17 @@ export default {
                         "Wood": {
                             "symbol": "W",
                             "name": "Wood",
-                            "production": 1
+                            "value": 1
                         },
                         "Stone": {
                             "symbol": "S",
                             "name": "Stone",
-                            "production": 1
+                            "value": 1
                         },
                         "Food": {
                             "symbol": "F",
                             "name": "Food",
-                            "production": 3
+                            "value": 3
                         }
                     },
                     "production_value": 3
@@ -1453,17 +1453,17 @@ export default {
                         "Wood": {
                             "symbol": "W",
                             "name": "Wood",
-                            "production": 1
+                            "value": 1
                         },
                         "Stone": {
                             "symbol": "S",
                             "name": "Stone",
-                            "production": 1
+                            "value": 1
                         },
                         "Food": {
                             "symbol": "F",
                             "name": "Food",
-                            "production": 3
+                            "value": 3
                         }
                     },
                     "id": "cb075da1-b9b7-4ddc-b37c-d86381ae251c",
@@ -1473,17 +1473,17 @@ export default {
                         "Wood": {
                             "symbol": "W",
                             "name": "Wood",
-                            "production": 1
+                            "value": 1
                         },
                         "Stone": {
                             "symbol": "S",
                             "name": "Stone",
-                            "production": 1
+                            "value": 1
                         },
                         "Food": {
                             "symbol": "F",
                             "name": "Food",
-                            "production": 3
+                            "value": 3
                         }
                     },
                     "production_value": 3
@@ -1494,17 +1494,17 @@ export default {
                         "Wood": {
                             "symbol": "W",
                             "name": "Wood",
-                            "production": 2
+                            "value": 2
                         },
                         "Stone": {
                             "symbol": "S",
                             "name": "Stone",
-                            "production": 2
+                            "value": 2
                         },
                         "Food": {
                             "symbol": "F",
                             "name": "Food",
-                            "production": 3
+                            "value": 3
                         }
                     },
                     "id": "1da2924d-c585-4b4b-be6d-77a8ae847830",
@@ -1514,17 +1514,17 @@ export default {
                         "Wood": {
                             "symbol": "W",
                             "name": "Wood",
-                            "production": 1
+                            "value": 1
                         },
                         "Stone": {
                             "symbol": "S",
                             "name": "Stone",
-                            "production": 1
+                            "value": 1
                         },
                         "Food": {
                             "symbol": "F",
                             "name": "Food",
-                            "production": 1
+                            "value": 1
                         }
                     },
                     "production_value": 3
