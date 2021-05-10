@@ -156,7 +156,6 @@
           this.playerData = data
         })
         this.socket.on('game-data', (data) => {
-          console.log(data)
           this.gameData = data
         })
       },

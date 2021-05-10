@@ -155,8 +155,8 @@ export default {
       return true
     },
     build (building) {
-      console.log(this.currentCell)
       this.socket.emit("action", {
+        "kind": "ADD_BUILDING",
         "uuid": this.gameData.uuid,
         "building_uid": building,
         "cell_id": this.currentCell.index
