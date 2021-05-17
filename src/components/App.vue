@@ -117,8 +117,8 @@
     },
     data() {
       return {
-        playerData: null,
-        gameData: null,
+        playerData: data,
+        gameData: gameData,
         map: {
           x: 20,
           y: 20,
@@ -154,6 +154,9 @@
         })
         this.socket.on('player', (data) => {
           this.playerData = data
+          if (this.currentCell) {
+            this.currentCell = this.playerData.mapped_cells.find(cell => cell.index === this.currentCell.index) 
+          }
         })
         this.socket.on('game-data', (data) => {
           this.gameData = data

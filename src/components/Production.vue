@@ -1,7 +1,7 @@
 <template>
   <div id="production" v-if="currentCell">
-    <div id="build" v-if="currentCell.in_progress_building">
-      {{ progession_build }} : {{ in_progress_building }}
+    <div id="build" class="product" v-if="currentCell.in_progress_building">
+      {{ currentCell.progession_build }} : {{ currentCell.in_progress_building.name }}
     </div>
     <div id="units" v-if="building">
       <div class="product" v-for="(product, index) in building.production_queue" :key="index">

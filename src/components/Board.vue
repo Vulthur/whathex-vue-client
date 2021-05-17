@@ -11,7 +11,7 @@
           }">
         <template v-for="cell in mappedCells">
           <cell :key="cell.id"
-            :selected="cell === currentCell"
+            :selected="currentCell && cell.index === currentCell.index"
             :cellWidth="width"
   	        :cellHeight="height"
             :cell="cell">
