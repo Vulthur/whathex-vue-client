@@ -10,7 +10,7 @@
           :mappedCells="playerData.mapped_cells"
           :capital="playerData.capital"
           :currentCell=currentCell
-          :map="map"
+          :gameData="gameData"
         ></board>
         <production
           :currentCell=currentCell>
@@ -117,12 +117,8 @@
     },
     data() {
       return {
-        playerData: data,
-        gameData: gameData,
-        map: {
-          x: 20,
-          y: 20,
-        },
+        playerData: null, //data,
+        gameData: null, //gameData,
         currentCell: null,
         socket: null,
         connected: false,

@@ -6,8 +6,8 @@
       <div id="cells"
           ref="cells"
           :style="{
-            width: `${map.x * width}px`,
-            height: `${map.y * height}px`,
+            width: `${gameData.width * width}px`,
+            height: `${gameData.height * height}px`,
           }">
         <template v-for="cell in mappedCells">
           <cell :key="cell.id"
@@ -111,7 +111,7 @@ export default {
     Cell
   },
   props: {
-    map: Object,
+    gameData: Object,
     capital: Object,
     mappedCells: Array,
     currentCell: Object
@@ -214,7 +214,7 @@ export default {
 <style lang="scss">
   #board {
     width: 100%;
-    height: 82vh;
+    height: 85vh;
     background-color: aquamarine;
     position: relative;
   }

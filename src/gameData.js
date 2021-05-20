@@ -1,4 +1,8 @@
 export default {
+   "width": 20,
+   "height": 20,
+   "ally_id": "7iBrVwi1k4tukWB5AAAD",
+   "enemy_id": "ID",
    "productibles":{
       "Lancer":{
          "production_charge":3,

@@ -102,7 +102,8 @@
             <span class="title-property">PRODUCTIBLES</span>
           </div>
           <div class="property" v-for="(product, index) in building.productibles" :key="`product-${index}`">
-            <button>{{ `${product.toUpperCase()}` }}</button>
+            <button @click="produce(product)"
+              :disabled="!canProduce(product)">{{ `${product.toUpperCase()}` }}</button>
           </div>
         </div>
         <div class="column-props">
@@ -134,9 +135,15 @@
       <div id="header-name">MILITARY UNITS</div>
       <div class="properties">
         <div class="column-props">
-          <div class="property" v-for="(buildable, index) in buildables" :key="`buildable-${index}`">
-            <button @click="build(buildable)"
-              :disabled="!canBuild(buildable)">{{ `${buildable.toUpperCase()}` }}</button>
+          <div>ALLY</div>
+          <div class="property" v-for="(units, index) in militaries[gameData.ally_id]" :key="`units-ally-${index}`">
+            {{ units.name }} - {{ units.pv }}
+          </div>
+        </div>
+        <div class="column-props">
+          <div>ENEMY</div>
+          <div class="property" v-for="(units, index) in militaries[enemy_id]" :key="`units-enemy-${index}`">
+            {{ units.name }} - {{ units.pv }}
           </div>
         </div>
       </div>
@@ -153,6 +160,8 @@ export default {
     currentCell: Object,
     stocks: Object,
     gameData: Object,
+    allyId: String,
+    enemyId: String,
     socket: Object
   },
   methods: {
@@ -168,11 +177,28 @@ export default {
       }
       return true
     },
+    canProduce (product) {
+      for (let ressource in this.gameData.productibles[product].cost) {
+        this.gameData.productibles[product].cost[ressource]
+        if (this.gameData.productibles[product].cost[ressource].value > this.stocks[ressource].value) {
+          return false
+        }
+      }
+      return true
+    },
     build (building) {
       this.socket.emit("action", {
         "kind": "ADD_BUILDING",
         "uuid": this.gameData.uuid,
         "building_uid": building,
+        "cell_id": this.currentCell.index
+      })
+    },
+    produce (product) {
+      this.socket.emit("action", {
+        "kind": "ADD_PRODUCT",
+        "uuid": this.gameData.uuid,
+        "product_id": product,
         "cell_id": this.currentCell.index
       })
     }
@@ -187,8 +213,11 @@ export default {
     buildables () {
       return this.currentCell.soil.buildables
     },
-    military () {
-      return this.currentCell.soil.buildables
+    militaries () {
+      return this.currentCell.military_units
+    },
+    civilians () {
+      return this.currentCell.civilian_units
     }
   }
 }
@@ -197,7 +226,7 @@ export default {
 <style lang="scss">
   #controls {
     width: 100%;
-    height: 18vh;
+    height: 15vh;
     background-color: burlywood;
     display: flex;
     align-items: center;
@@ -217,7 +246,7 @@ export default {
   }
   #header-name {
     height: 20%;
-    font-size: 15px;
+    font-size: 12px;
   }
   .column-props {
     padding: 0 10px;
