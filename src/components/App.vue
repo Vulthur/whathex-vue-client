@@ -156,6 +156,9 @@
         })
         this.socket.on('game-data', (data) => {
           this.gameData = data
+          this.$nextTick(() => {
+            EventBus.$emit('go-to-capital')
+          });
         })
       },
       play () {

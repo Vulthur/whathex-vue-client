@@ -3,7 +3,7 @@
     <div id="map"
       ref="map"
       @wheel="zooming">
-      <div id="cells"
+      <div v-if="gameData" id="cells"
           ref="cells"
           :style="{
             width: `${gameData.width * width}px`,
@@ -187,10 +187,10 @@ export default {
       // // this.$refs.cells.style.transformOrigin = `${event.clientX}px ${event.clientY}`
     },
     goToCapital () {
-        this.$refs.map.scrollLeft = this.capital.x * this.height - (window.innerWidth / 2)
-        this.$refs.map.scrollTop = this.capital.x % 2 == 0 
-          ? this.capital.y * this.width - (window.innerHeight / 2)
-          : (this.capital.y * this.width) + (this.width / 2) - (window.innerHeight / 2)
+      this.$refs.map.scrollLeft = this.capital.x * this.height - (window.innerWidth / 2)
+      this.$refs.map.scrollTop = this.capital.x % 2 == 0 
+        ? this.capital.y * this.width - (window.innerHeight / 2)
+        : (this.capital.y * this.width) + (this.width / 2) - (window.innerHeight / 2)
     }
   },
   computed: {

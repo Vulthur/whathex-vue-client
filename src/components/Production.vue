@@ -5,8 +5,8 @@
     </div>
     <div id="units" v-if="building">
       <div class="product" v-for="(product, index) in building.production_queue" :key="index">
-        <template v-if="index === 1">
-          {{ product.name }} : {{ production_current }}
+        <template v-if="index === 0">
+          {{ product.name }} : {{ building.production_current }}
         </template>
         <template v-else>
           {{ product.name }}
