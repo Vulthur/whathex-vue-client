@@ -113,6 +113,9 @@
               <span>{{ `${key[0].toUpperCase()}` }}</span>
               <span>{{ `${income.value}` }}</span>
             </div>
+            <div class="property">
+              <button @click="remove()">DESTRUCT</button>
+            </div>
           </div>
         </div>
       </div>
@@ -127,19 +130,20 @@
           </div>
         </div>
       </div>
+      <!-- Units -->
       <div class="units" v-if="militaries[gameData.ally_id] || militaries[gameData.enemy_id]">
         <div id="header-name">MILITARY UNITS</div>
         <div class="properties">
           <div class="column-props">
             <div>ALLY</div>
             <div class="property" v-for="(units, index) in militaries[gameData.ally_id]" :key="`military-ally-${index}`">
-              {{ units.name }} : {{ units.pv }}
+              {{ units.name }} : {{ units.pv }} / {{ units.max_pv }}
             </div>
           </div>
           <div class="column-props">
             <div>ENEMY</div>
             <div class="property" v-for="(units, index) in militaries[gameData.enemy_id]" :key="`military-enemy-${index}`">
-              {{ units.name }} : {{ units.pv }}
+              {{ units.name }} : {{ units.pv }} / {{ units.max_pv }}
             </div>
           </div>
         </div>
@@ -213,6 +217,13 @@ export default {
         "kind": "ADD_PRODUCT",
         "uuid": this.gameData.uuid,
         "product_id": product,
+        "cell_id": this.currentCell.index
+      })
+    },
+    remove (product) {
+      this.socket.emit("action", {
+        "kind": "REMOVE_BUILDING",
+        "uuid": this.gameData.uuid,
         "cell_id": this.currentCell.index
       })
     }

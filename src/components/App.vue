@@ -9,17 +9,19 @@
         <board
           :mappedCells="playerData.mapped_cells"
           :capital="playerData.capital"
-          :currentCell=currentCell
+          :currentCell="currentCell"
           :gameData="gameData"
         ></board>
         <production
-          :currentCell=currentCell>
+          :currentCell="currentCell"
+          :gameData="gameData"
+          :socket="socket">
         </production>
         <control
           :stocks="playerData.stocks"
           :gameData="gameData"
           :socket="socket"
-          :currentCell=currentCell>
+          :currentCell="currentCell">
         </control>
       </div>
       <!-- <side-bar :currentCell=currentCell></side-bar> -->

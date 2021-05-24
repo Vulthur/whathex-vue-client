@@ -1,15 +1,13 @@
 <template>
   <div id="production" v-if="currentCell">
-    <div id="build" class="product" v-if="currentCell.in_progress_building">
+    <div @click="cancelBuilding" id="build" class="product" v-if="currentCell.in_progress_building">
       {{ currentCell.progession_build }} : {{ currentCell.in_progress_building.name }}
     </div>
     <div id="units" v-if="building">
-      <div class="product" v-for="(product, index) in building.production_queue" :key="index">
-        <template v-if="index === 0">
-          {{ product.name }} : {{ building.production_current }}
-        </template>
-        <template v-else>
-          {{ product.name }}
+      <div class="product" @click="cancelProduct(index)" v-for="(product, index) in building.production_queue" :key="index">
+        {{ product.name }}
+        <template v-if="index === 0 && building.production_current">
+          : {{ building.production_current }}
         </template>
       </div>
     </div>
@@ -20,7 +18,26 @@
 export default {
 name: "production",
   props: {
-    currentCell: Object
+    currentCell: Object,
+    socket: Object,
+    gameData: Object
+  },
+  methods: {
+    cancelBuilding () {
+      this.socket.emit("action", {
+        "kind": "CANCEL_BUILDING",
+        "uuid": this.gameData.uuid,
+        "cell_id": this.currentCell.index
+      })
+    },
+    cancelProduct (index) {
+      this.socket.emit("action", {
+        "kind": "CANCEL_PRODUCT",
+        "uuid": this.gameData.uuid,
+        "index": index,
+        "cell_id": this.currentCell.index
+      })
+    }
   },
   computed: {
     building () {
