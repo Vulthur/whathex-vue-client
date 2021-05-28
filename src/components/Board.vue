@@ -123,7 +123,7 @@ export default {
       moveSpeed: 15,
       zoom: 1.0,
       stepZoom: 0.05,
-      borderSize: '30px',
+      borderSize: '10px',
       border: {
         'TOP': false,
         'BOTTOM': false,
@@ -133,7 +133,7 @@ export default {
         'LEFT-BOTTOM': false,
         'RIGHT-TOP': false,
         'LEFT-TOP': false,
-      }
+      },
     }
   },
   methods: {

@@ -136,14 +136,19 @@
         <div class="properties">
           <div class="column-props">
             <div>ALLY</div>
-            <div class="property" v-for="(units, index) in militaries[gameData.ally_id]" :key="`military-ally-${index}`">
-              {{ units.name }} : {{ units.pv }} / {{ units.max_pv }}
-            </div>
+            <template v-for="(unit, index) in militaries[gameData.ally_id]">
+              <div :class="{'ally-unit-selected' : isUnitSelected(unit)}"
+                  class="property unit ally-unit"
+                  :key="`military-ally-${index}`"
+                  @click="toggleUnit(unit)">
+                {{ unit.name }} : {{ unit.pv }} / {{ unit.max_pv }}
+              </div>
+            </template>
           </div>
           <div class="column-props">
             <div>ENEMY</div>
-            <div class="property" v-for="(units, index) in militaries[gameData.enemy_id]" :key="`military-enemy-${index}`">
-              {{ units.name }} : {{ units.pv }} / {{ units.max_pv }}
+            <div class="property unit" v-for="(unit, index) in militaries[gameData.enemy_id]" :key="`military-enemy-${index}`">
+              {{ unit.name }} : {{ unit.pv }} / {{ unit.max_pv }}
             </div>
           </div>
         </div>
@@ -153,13 +158,18 @@
         <div class="properties">
           <div class="column-props">
             <div>ALLY</div>
-            <div class="property" v-for="(unit, index) in civilians[gameData.ally_id]" :key="`civilian-ally-${index}`">
-              {{ unit.name }}
-            </div>
+            <template v-for="(unit, index) in civilians[gameData.ally_id]">
+              <div :class="{'ally-unit-selected' : isUnitSelected(unit)}"
+                  class="property unit ally-unit"
+                  :key="`civilian-ally-${index}`"
+                  @click="toggleUnit(unit)">
+                {{ unit.name }}
+              </div>
+            </template>
           </div>
           <div class="column-props">
             <div>ENEMY</div>
-            <div class="property" v-for="(unit, index) in civilians[gameData.enemy_id]" :key="`civilian-enemy-${index}`">
+            <div class="property unit" v-for="(unit, index) in civilians[gameData.enemy_id]" :key="`civilian-enemy-${index}`">
               {{ unit.name }}
             </div>
           </div>
@@ -171,6 +181,7 @@
 
 <script>
 import { getHexagoneColor } from '../common'
+import { EventBus } from "../index"
 
 export default {
   name: "controls",
@@ -180,7 +191,8 @@ export default {
     gameData: Object,
     allyId: String,
     enemyId: String,
-    socket: Object
+    socket: Object,
+    selectedUnits: Array
   },
   methods: {
     getHexagoneColor (soil) {
@@ -220,12 +232,18 @@ export default {
         "cell_id": this.currentCell.index
       })
     },
-    remove (product) {
+    remove () {
       this.socket.emit("action", {
         "kind": "REMOVE_BUILDING",
         "uuid": this.gameData.uuid,
         "cell_id": this.currentCell.index
       })
+    },
+    isUnitSelected (unit) {
+      return this.selectedUnits.find(u => u.id == unit.id)
+    },
+    toggleUnit (unit) {
+      EventBus.$emit('add-unit-selection', unit)
     }
   },
   computed: {
@@ -263,7 +281,7 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin: 5px;
+    margin: 2px;
     border-radius: 5px;
     border-width: 2px;
     border-style: solid;
@@ -271,20 +289,22 @@ export default {
     border-color: darkseagreen;
   }
   #header-name {
-    height: 20%;
-    font-size: 12px;
+    min-height: 10%;
+    font-size: 10px;
   }
   .column-props {
-    padding: 0 10px;
+    padding: 0 3px;
+    overflow-y: auto;
+  height: 100%;
   }
   .properties {
     height: 80%;
-    font-size: 10px;
+    font-size: 8px;
     display: flex;
     flex-wrap: wrap;
   }
   .property button {
-    font-size: 10px;
+    font-size: 8px;
     margin-bottom: 2px;
     width: 100%;
   }
@@ -300,5 +320,22 @@ export default {
     margin-bottom: 4px;
     text-align: center;
     width: 100%;
+  }
+  .unit {
+    font-size: 7px;
+  }
+  .ally-unit {
+    background: gainsboro;
+    border: 1px solid gray;
+    padding: 2px;
+    margin-top: 1px;
+    border-radius: 1px;
+    cursor: pointer;
+  }
+  .ally-unit:hover {
+    background: khaki;
+  }
+  .ally-unit-selected {
+    background: lightcoral;
   }
 </style>
