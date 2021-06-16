@@ -18,6 +18,17 @@
           </cell>
         </template>
       </div>
+      <template v-for="(unit, index) in selectedUnits">
+        <svg :key="index" 
+            version="1.1"
+            class="lines"
+            :style="{
+              left: `${unit.cell.x * height}px`,
+              top: unit.cell.x % 2 == 0 ? `${unit.cell.y * width}px` : `${(unit.cell.y * width) + (width / 2)}px`,
+            }">
+          <line x1="0" y1="0" x2="200" y2="200" class="line"/> 
+        </svg>
+      </template>
     </div>
     <div class="border"
       @mouseenter="enterBorder('TOP')"
@@ -114,7 +125,8 @@ export default {
     gameData: Object,
     capital: Object,
     mappedCells: Array,
-    currentCell: Object
+    currentCell: Object,
+    selectedUnits: Array
   },
   data () {
     return {
@@ -187,11 +199,14 @@ export default {
       // // this.$refs.cells.style.transformOrigin = `${event.clientX}px ${event.clientY}`
     },
     goToCapital () {
-      this.$refs.map.scrollLeft = this.capital.x * this.height - (window.innerWidth / 2)
-      this.$refs.map.scrollTop = this.capital.x % 2 == 0 
-        ? this.capital.y * this.width - (window.innerHeight / 2)
-        : (this.capital.y * this.width) + (this.width / 2) - (window.innerHeight / 2)
-    }
+      this.goToCell(this.capital)
+    },
+    goToCell (cell) {
+      this.$refs.map.scrollLeft = cell.x * this.height - (window.innerWidth / 2)
+      this.$refs.map.scrollTop = cell.x % 2 == 0 
+        ? cell.y * this.width - (window.innerHeight / 2)
+        : (cell.y * this.width) + (this.width / 2) - (window.innerHeight / 2)
+    },
   },
   computed: {
     width () {
@@ -199,7 +214,7 @@ export default {
     },
     height () {
       return Math.floor(this.cellHeight * this.zoom)
-    },
+    }
   },
   mounted () {
     window.requestAnimationFrame(this.moveMap)
@@ -234,5 +249,12 @@ export default {
     background-color: transparent;
     position: fixed;
     z-index: 2;
+  }
+  .lines {
+    position: absolute;
+  }
+  .line {
+    stroke: crimson;
+    stroke-width: 2;
   }
 </style>

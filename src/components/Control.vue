@@ -132,21 +132,21 @@
       </div>
       <!-- Units -->
       <div class="units" v-if="militaries[gameData.ally_id] || militaries[gameData.enemy_id]">
-        <div id="header-name">MILITARY UNITS</div>
+        <div id="header-name">MILITARY</div>
         <div class="properties">
           <div class="column-props">
-            <div>ALLY</div>
+            <div class="title-property">ALLY</div>
             <template v-for="(unit, index) in militaries[gameData.ally_id]">
               <div :class="{'ally-unit-selected' : isUnitSelected(unit)}"
                   class="property unit ally-unit"
                   :key="`military-ally-${index}`"
                   @click="toggleUnit(unit)">
-                {{ unit.name }} : {{ unit.pv }} / {{ unit.max_pv }}
+                {{ unit.name }} : {{ unit.pv }}/{{ unit.max_pv }}
               </div>
             </template>
           </div>
-          <div class="column-props">
-            <div>ENEMY</div>
+          <div class="column-props" v-if="militaries[gameData.enemy_id]">
+            <div class="title-property">ENEMY</div>
             <div class="property unit" v-for="(unit, index) in militaries[gameData.enemy_id]" :key="`military-enemy-${index}`">
               {{ unit.name }} : {{ unit.pv }} / {{ unit.max_pv }}
             </div>
@@ -154,10 +154,10 @@
         </div>
       </div>
       <div class="units" v-if="civilians[gameData.ally_id] || civilians[gameData.enemy_id]">
-        <div id="header-name">CIVILIAN UNITS</div>
+        <div id="header-name">CIVILIAN</div>
         <div class="properties">
           <div class="column-props">
-            <div>ALLY</div>
+            <div class="title-property">ALLY</div>
             <template v-for="(unit, index) in civilians[gameData.ally_id]">
               <div :class="{'ally-unit-selected' : isUnitSelected(unit)}"
                   class="property unit ally-unit"
@@ -167,8 +167,8 @@
               </div>
             </template>
           </div>
-          <div class="column-props">
-            <div>ENEMY</div>
+          <div class="column-props" v-if="civilians[gameData.enemy_id]">
+            <div class="title-property">ENEMY</div>
             <div class="property unit" v-for="(unit, index) in civilians[gameData.enemy_id]" :key="`civilian-enemy-${index}`">
               {{ unit.name }}
             </div>
@@ -240,7 +240,7 @@ export default {
       })
     },
     isUnitSelected (unit) {
-      return this.selectedUnits.find(u => u.id == unit.id)
+      return this.selectedUnits.find(u => u.uuid == unit.uuid)
     },
     toggleUnit (unit) {
       EventBus.$emit('add-unit-selection', unit)
@@ -266,7 +266,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   #controls {
     width: 100%;
     height: 15vh;
@@ -295,7 +295,7 @@ export default {
   .column-props {
     padding: 0 3px;
     overflow-y: auto;
-  height: 100%;
+    height: 100%;
   }
   .properties {
     height: 80%;

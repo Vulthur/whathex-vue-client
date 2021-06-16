@@ -9,6 +9,7 @@
         <board
           :mappedCells="playerData.mapped_cells"
           :capital="playerData.capital"
+          :selectedUnits="selectedUnits"
           :currentCell="currentCell"
           :gameData="gameData"
         ></board>
@@ -17,6 +18,11 @@
           :gameData="gameData"
           :socket="socket">
         </production>
+        <selected-units
+          :selectedUnits="selectedUnits"
+          :gameData="gameData"
+          :socket="socket">
+        </selected-units>
         <control
           :stocks="playerData.stocks"
           :gameData="gameData"
@@ -106,6 +112,7 @@
   import Control from "./Control.vue"
   import SideBar from "./SideBar.vue"
   import Production from "./Production.vue"
+  import SelectedUnits from "./SelectedUnits.vue"
   
   import io from 'socket.io-client'
 
@@ -116,7 +123,8 @@
       Board,
       Control,
       SideBar,
-      Production
+      Production,
+      SelectedUnits
     },
     data() {
       return {
@@ -160,11 +168,11 @@
           for (const unit of this.selectedUnits) {
             let foundIndex = -1
             for (const cell of this.playerData.mapped_cells) {
-              foundIndex = cell.military_units[this.gameData.ally_id].findIndex(u => u.id === unit.id)
+              foundIndex = cell.military_units[this.gameData.ally_id].findIndex(u => u.uuid === unit.uuid)
               if (foundIndex !== -1) {
                 break
               }
-              foundIndex = cell.civilian_units[this.gameData.ally_id].findIndex(u => u.id === unit.id)
+              foundIndex = cell.civilian_units[this.gameData.ally_id].findIndex(u => u.uuid === unit.uuid)
               if (foundIndex !== -1) {
                 break
               }
@@ -194,8 +202,17 @@
       EventBus.$on('select-cell', cell => {
         this.currentCell = cell
       })
+      EventBus.$on('remove-unit-selection', unit => {
+        let index = this.selectedUnits.findIndex(u => u.uuid === unit.uuid)
+        if (index !== -1) {
+          this.selectedUnits.splice(index, 1)
+        }
+      })
+      EventBus.$on('clear-unit-selection', () => {
+        this.selectedUnits = []
+      })
       EventBus.$on('add-unit-selection', (unit) => {
-        const index = this.selectedUnits.findIndex(u => u.id === unit.id)
+        const index = this.selectedUnits.findIndex(u => u.uuid === unit.uuid)
         if (index === -1) {
           this.selectedUnits.push(unit)
         } else {
