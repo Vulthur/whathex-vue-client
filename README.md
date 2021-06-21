@@ -7,6 +7,9 @@ WhatHexVueClient
 Component selected unit
     Action move
 
+Display vision cell
+Correct use of mapped cell ?
+
 Draw line units selected next cell
 
 On cell Circle svg for unit present on the cell (enemy ally, mili, civil)

@@ -11,6 +11,7 @@
     </div>
     <svg class="hexagones"
         @click="selectCell()"
+        @contextmenu.prevent="moveUnit()"
         :style="{
           left: `${cell.x * cellHeight}px`,
           top: cell.x % 2 == 0 ? `${cell.y * cellWidth}px` : `${(cell.y * cellWidth) + (cellWidth / 2)}px`,
@@ -52,6 +53,9 @@ export default {
     },
     selectCell () {
       EventBus.$emit("select-cell", this.cell)
+    },
+    moveUnit () {
+      EventBus.$emit("move-units", this.cell)
     }
   }
 }

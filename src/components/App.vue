@@ -106,6 +106,7 @@
   import data from "../data"
   import gameData from "../gameData"
   import { EventBus } from "../index"
+  import Vue from 'vue'
 
   import HeaderBar from "./HeaderBar.vue"
   import Board from "./Board.vue"
@@ -165,16 +166,22 @@
           if (this.currentCell) {
             this.currentCell = this.playerData.mapped_cells.find(cell => cell.index === this.currentCell.index) 
           }
-          for (const unit of this.selectedUnits) {
+          for (let [index, unit] of this.selectedUnits.entries()) {
             let foundIndex = -1
             for (const cell of this.playerData.mapped_cells) {
-              foundIndex = cell.military_units[this.gameData.ally_id].findIndex(u => u.uuid === unit.uuid)
-              if (foundIndex !== -1) {
-                break
+              if (cell.military_units[this.gameData.ally_id]) {
+                foundIndex = cell.military_units[this.gameData.ally_id].findIndex(u => u.uuid === unit.uuid)
+                if (foundIndex !== -1) {
+                  Vue.set(this.selectedUnits, index, cell.military_units[this.gameData.ally_id][foundIndex])
+                  break
+                }
               }
-              foundIndex = cell.civilian_units[this.gameData.ally_id].findIndex(u => u.uuid === unit.uuid)
-              if (foundIndex !== -1) {
-                break
+              if (cell.civilian_units[this.gameData.ally_id]) {
+                foundIndex = cell.civilian_units[this.gameData.ally_id].findIndex(u => u.uuid === unit.uuid)
+                if (foundIndex !== -1) {
+                  Vue.set(this.selectedUnits, index, cell.civilian_units[this.gameData.ally_id][foundIndex])
+                  break
+                }
               }
             }
             if (foundIndex === -1) {
@@ -196,7 +203,7 @@
       },
       goToCapital () {
         EventBus.$emit('go-to-capital')
-      }
+      },
     },
     created () {
       EventBus.$on('select-cell', cell => {
@@ -210,6 +217,18 @@
       })
       EventBus.$on('clear-unit-selection', () => {
         this.selectedUnits = []
+      })
+      EventBus.$on("move-units", (cell) => {
+        console.log(cell)
+        if (!this.playerData || !this.selectedUnits) {
+          return
+        }
+        this.socket.emit("action", {
+          "kind": "MOVE",
+          "uuid": this.gameData.uuid,
+          "cell_id": cell.index,
+          "unit_uuids": this.selectedUnits.map(u => u.uuid)
+        })
       })
       EventBus.$on('add-unit-selection', (unit) => {
         const index = this.selectedUnits.findIndex(u => u.uuid === unit.uuid)

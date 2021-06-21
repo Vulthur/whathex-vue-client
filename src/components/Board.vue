@@ -19,15 +19,17 @@
         </template>
       </div>
       <template v-for="(unit, index) in selectedUnits">
-        <svg :key="index" 
-            version="1.1"
-            class="lines"
-            :style="{
-              left: `${unit.cell.x * height}px`,
-              top: unit.cell.x % 2 == 0 ? `${unit.cell.y * width}px` : `${(unit.cell.y * width) + (width / 2)}px`,
-            }">
-          <line x1="0" y1="0" x2="200" y2="200" class="line"/> 
-        </svg>
+        <template v-if="unit.destination">
+          <svg :key="index" 
+              version="1.1"
+              class="lines"
+              :style="{
+                left: `${unit.cell.x * height}px`,
+                top: unit.cell.x % 2 == 0 ? `${unit.cell.y * width}px` : `${(unit.cell.y * width) + (width / 2)}px`,
+              }">
+            <line :x1="height / 2" :y1="width / 2" :x2="200" :y2="200" class="line"/> 
+          </svg>
+        </template>
       </template>
     </div>
     <div class="border"
