@@ -13,6 +13,7 @@
           <cell :key="cell.id"
             :selected="currentCell && cell.index === currentCell.index"
             :cellWidth="width"
+            :gameData="gameData"
   	        :cellHeight="height"
             :cell="cell">
           </cell>

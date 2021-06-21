@@ -30,7 +30,40 @@
           {{ cell.building.name.charAt(0) }}
         </text>
       </template>
-      <!-- TODO UNITS VISUAL -->
+      <!-- Ally -->
+      <template v-if="militaries[gameData.ally_id] && militaries[gameData.ally_id].length">
+        <circle cx="75%" cy="75%" r="10" fill="blue"/>
+        <text x="75%"
+            y="75%"
+            class="units-circle">
+          {{ militaries[gameData.ally_id].length }}
+        </text>
+      </template>     
+      <template v-if="civilians[gameData.ally_id] && civilians[gameData.ally_id].length">
+        <circle cx="25%" cy="75%" r="10" fill="blue"/>
+        <text x="25%"
+            y="75%"
+            class="units-circle">
+          {{ civilians[gameData.ally_id].length }}
+        </text>
+      </template>     
+      <!-- Enemy -->
+      <template v-if="militaries[gameData.enemy_id] && militaries[gameData.enemy_id].length">
+        <circle cx="75%" cy="25%" r="10" fill="red"/>
+        <text x="75%"
+            y="25%"
+            class="units-circle">
+          {{ militaries[gameData.enemy_id].length }}
+        </text>
+      </template>     
+      <template v-if="civilians[gameData.enemy_id] && civilians[gameData.enemy_id].length">
+        <circle cx="25%" cy="25%" r="10" fill="red"/>
+        <text x="25%"
+            y="25%"
+            class="units-circle">
+          {{ civilians[gameData.enemy_id].length }}
+        </text>
+      </template>     
     </svg>
   </div>
 </template>
@@ -45,7 +78,8 @@ export default {
     cell: Object,
     cellWidth: Number,
     cellHeight: Number,
-    selected: Boolean
+    selected: Boolean,
+    gameData: Object,
   },
   methods: {
     getHexagoneColor (soil) {
@@ -57,6 +91,14 @@ export default {
     moveUnit () {
       EventBus.$emit("move-units", this.cell)
     }
+  },
+  computed: {
+    militaries () {
+      return this.cell.military_units
+    },
+    civilians () {
+      return this.cell.civilian_units
+    }
   }
 }
 </script>
@@ -67,5 +109,11 @@ export default {
   }
   #model-hexa {
     display: none;
+  }
+  .units-circle {
+    text-anchor: middle;
+    fill: white;
+    font-size: 10px;
+    dominant-baseline: middle;
   }
 </style>
