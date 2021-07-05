@@ -6,15 +6,29 @@
       <div v-if="gameData" id="cells"
           ref="cells"
           :style="{
-            width: `${gameData.width * width}px`,
-            height: `${gameData.height * height}px`,
+            width: `${gameData.width * height + (offset * 2)}px`,
+            height: `${gameData.height * width + (offset * 2) + (width / 2)}px`,
           }">
+        <!-- DEFAULT CELL -->
+        <template v-for="(i, indexI) in gameData.height">
+          <template v-for="(j, indexJ) in gameData.width">
+            <empty-cell :key="`${i}-${j}`"
+              :selected="currentCell && (indexJ + (indexI * gameData.width)) === currentCell.index"
+              :cellWidth="width"
+              :cellHeight="height"
+              :offset="offset"
+            :cell="{x: indexJ, y: indexI, index: indexJ + (indexI * gameData.width)}">
+            </empty-cell>
+          </template>
+        </template>
+        <!-- MAPPED CELL -->
         <template v-for="cell in mappedCells">
           <cell :key="cell.id"
             :selected="currentCell && cell.index === currentCell.index"
-            :cellWidth="width"
             :gameData="gameData"
+            :cellWidth="width"
   	        :cellHeight="height"
+            :offset="offset"
             :cell="cell">
           </cell>
         </template>
@@ -117,12 +131,14 @@
 <script>
 
 import Cell from "./Cell"
+import EmptyCell from "./EmptyCell"
 import { EventBus } from "../index"
 
 export default {
   name: "board",
   components: {
-    Cell
+    Cell,
+    EmptyCell
   },
   props: {
     gameData: Object,
@@ -138,6 +154,7 @@ export default {
       moveSpeed: 15,
       zoom: 1.0,
       stepZoom: 0.05,
+      offset: 50,
       borderSize: '10px',
       border: {
         'TOP': false,
@@ -205,10 +222,10 @@ export default {
       this.goToCell(this.capital)
     },
     goToCell (cell) {
-      this.$refs.map.scrollLeft = cell.x * this.height - (window.innerWidth / 2)
+      this.$refs.map.scrollLeft = cell.x * this.height - (window.innerWidth / 2) - this.offset
       this.$refs.map.scrollTop = cell.x % 2 == 0 
-        ? cell.y * this.width - (window.innerHeight / 2)
-        : (cell.y * this.width) + (this.width / 2) - (window.innerHeight / 2)
+        ? cell.y * this.width - (window.innerHeight / 2) + this.offset
+        : (cell.y * this.width) + (this.width / 2) - (window.innerHeight / 2) - this.offset
     },
   },
   computed: {

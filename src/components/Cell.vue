@@ -13,13 +13,21 @@
         @click="selectCell()"
         @contextmenu.prevent="moveUnit()"
         :style="{
-          left: `${cell.x * cellHeight}px`,
-          top: cell.x % 2 == 0 ? `${cell.y * cellWidth}px` : `${(cell.y * cellWidth) + (cellWidth / 2)}px`,
+          left: `${cell.x * cellHeight + offset}px`,
+          top: cell.x % 2 == 0 ? `${cell.y * cellWidth + offset}px` : `${(cell.y * cellWidth) + (cellWidth / 2) + offset}px`,
         }"
         :fill="getHexagoneColor(cell.soil)"
         viewBox="0 0 120 104" :width="cellWidth" :height="cellHeight"
         id="test">
       <use xlink:href="#hexagone" :stroke="selected ? 'black' : ''"/>
+      <text x="50%"
+          y="20%"
+          dominant-baseline="middle"
+          text-anchor="middle"
+          fill="white"
+          font-size="9px">
+        {{ cell.index }}
+      </text>
       <template v-if="cell.building">
         <circle cx="60" cy="52" r="20" fill="black"/>
         <text x="50%"
@@ -80,6 +88,7 @@ export default {
     cellHeight: Number,
     selected: Boolean,
     gameData: Object,
+    offset: Number
   },
   methods: {
     getHexagoneColor (soil) {

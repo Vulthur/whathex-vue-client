@@ -1,6 +1,6 @@
 <template>
   <div id="controls">
-    <template v-if="currentCell">
+    <template v-if="currentCell && currentCell.soil">
       <div id="soil"
           :style="{
             'border-color': getHexagoneColor(currentCell.soil)

@@ -163,7 +163,7 @@
         })
         this.socket.on('player', (data) => {
           this.playerData = data
-          if (this.currentCell) {
+          if (this.currentCell && this.currentCell.soil) {
             this.currentCell = this.playerData.mapped_cells.find(cell => cell.index === this.currentCell.index) 
           }
           for (let [index, unit] of this.selectedUnits.entries()) {
