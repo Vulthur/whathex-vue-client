@@ -1,8 +1,22 @@
 <template>
   <div id="board" >
     <div id="map"
-      ref="map"
-      @wheel="zooming">
+        ref="map"
+        @wheel="zooming"
+        tabindex="0"
+        @keydown.up.exact="enterBorder('TOP')"
+        @keyup.up.exact="leaveBorder('TOP')"
+        @keydown.left.exact="enterBorder('LEFT')"
+        @keyup.left.exact="leaveBorder('LEFT')"
+        @keydown.right.exact="enterBorder('RIGHT')"
+        @keyup.right.exact="leaveBorder('RIGHT')"
+        @keydown.down.exact="enterBorder('BOTTOM')"
+        @keyup.down.exact="enterBorder('BOTTOM')"
+        @keydown.ctrl.up.exact="moveCurrentCell('TOP')"
+        @keydown.ctrl.left.exact="moveCurrentCell('LEFT')"
+        @keydown.ctrl.right.exact="moveCurrentCell('RIGHT')"
+        @keydown.ctrl.down.exact="moveCurrentCell('BOTTOM')"
+      >
       <div v-if="gameData" id="cells"
           ref="cells"
           :style="{
@@ -21,8 +35,8 @@
             </empty-cell>
           </template>
         </template>
-        <!-- MAPPED CELL -->
-        <template v-for="cell in mappedCells">
+        <!-- Vision CELL -->
+        <template v-for="cell in visionCells">
           <cell :key="cell.id"
             :selected="currentCell && cell.index === currentCell.index"
             :gameData="gameData"
@@ -31,6 +45,17 @@
             :offset="offset"
             :cell="cell">
           </cell>
+        </template>
+        <!-- MAPPED CELL -->
+        <template v-for="cell in mappedCells">
+          <mapped-cell :key="cell.id"
+            :selected="currentCell && cell.index === currentCell.index"
+            :gameData="gameData"
+            :cellWidth="width"
+  	        :cellHeight="height"
+            :offset="offset"
+            :cell="cell">
+          </mapped-cell>
         </template>
       </div>
       <template v-for="(unit, index) in selectedUnits">
@@ -132,18 +157,21 @@
 
 import Cell from "./Cell"
 import EmptyCell from "./EmptyCell"
+import MappedCell from "./MappedCell"
 import { EventBus } from "../index"
 
 export default {
   name: "board",
   components: {
     Cell,
-    EmptyCell
+    EmptyCell,
+    MappedCell
   },
   props: {
     gameData: Object,
     capital: Object,
     mappedCells: Array,
+    visionCells: Array,
     currentCell: Object,
     selectedUnits: Array
   },
@@ -174,6 +202,47 @@ export default {
     },
     leaveBorder (direction) {
       this.border[direction] = false
+    },
+    moveCurrentCell (direction) {
+      if (!this.currentCell) {
+        return
+      }
+      let x = this.currentCell.index % this.gameData.width
+      let y = parseInt(this.currentCell.index / this.gameData.height)
+      switch (direction) {
+        case 'TOP':
+          if (y - 1 < 0) {
+            return
+          }
+          y--
+          break
+        case 'BOTTOM':
+          if (y + 1 > this.gameData.height - 1) {
+            return
+          }
+          y++
+          break
+        case 'LEFT':
+          if (x - 1 < 0) {
+            return
+          }
+          x--
+          break
+        case 'RIGHT':
+          if (x + 1 > this.gameData.width - 1) {
+            return
+          }
+          x++
+          break
+      }
+      let cell = this.visionCells
+        .concat(this.mappedCells)
+        .find(cell => cell.index === x + (y * this.gameData.width)) 
+      if (cell) {
+        EventBus.$emit("select-cell", cell)
+      } else {
+        EventBus.$emit("select-cell", {x: x, y: y, index: x + (y * this.gameData.width)})
+      }
     },
     moveMap () {
       if (this.border['TOP']) {
@@ -207,16 +276,13 @@ export default {
       window.requestAnimationFrame(this.moveMap)
     },
     zooming (event) {
-      // console.log(event.clientX)
-      // console.log(event.clientY)
       if (event.deltaY > 0 && this.zoom - this.stepZoom > 0.5) {
         this.zoom -= this.stepZoom
       }
       if (event.deltaY < 0 && this.zoom + this.stepZoom < 2) {
         this.zoom += this.stepZoom
       }
-      // this.$refs.cells.style.transform = `scale(${this.zoom})`
-      // // this.$refs.cells.style.transformOrigin = `${event.clientX}px ${event.clientY}`
+      this.goToCell(this.currentCell)
     },
     goToCapital () {
       this.goToCell(this.capital)
@@ -226,6 +292,7 @@ export default {
       this.$refs.map.scrollTop = cell.x % 2 == 0 
         ? cell.y * this.width - (window.innerHeight / 2) + this.offset
         : (cell.y * this.width) + (this.width / 2) - (window.innerHeight / 2) - this.offset
+      EventBus.$emit("select-cell", cell)
     },
   },
   computed: {
@@ -241,6 +308,11 @@ export default {
     EventBus.$on('go-to-capital', () => {
       this.goToCapital()
     })   
+    EventBus.$on('go-to-cell', () => {
+      if (this.currentCell) {
+        this.goToCell(this.currentCell)
+      }
+    })   
     this.goToCapital()
   },
 }
@@ -249,7 +321,7 @@ export default {
 <style lang="scss">
   #board {
     width: 100%;
-    height: 85vh;
+    height: 100vh;
     background-color: aquamarine;
     position: relative;
   }

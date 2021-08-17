@@ -1,6 +1,7 @@
 <template>
   <div id="app" tabindex="0"
-      @keyup.space="goToCapital()">
+      @keyup.ctrl.space.exact="goToCapital()"
+      @keyup.space.exact="goToCell">
     <header-bar v-if="playerData"
       :stocks="playerData.stocks"
     ></header-bar>
@@ -8,6 +9,7 @@
       <div id="central">
         <board
           :mappedCells="playerData.mapped_cells"
+          :visionCells="playerData.vision_cells"
           :capital="playerData.capital"
           :selectedUnits="selectedUnits"
           :currentCell="currentCell"
@@ -24,6 +26,7 @@
           :socket="socket">
         </selected-units>
         <control
+          v-if="currentCell && currentCell.soil"
           :stocks="playerData.stocks"
           :gameData="gameData"
           :socket="socket"
@@ -140,8 +143,8 @@
       }
     },
     methods: {
-      connect () {
-        this.socket = io("ws://localhost:8765/")
+      async connect () {
+        this.socket = await io("ws://localhost:8765/")
         this.message = "CONNECTING ..."
         this.socket.on('connect', () => {
           this.connected = true
@@ -164,11 +167,13 @@
         this.socket.on('player', (data) => {
           this.playerData = data
           if (this.currentCell && this.currentCell.soil) {
-            this.currentCell = this.playerData.mapped_cells.find(cell => cell.index === this.currentCell.index) 
+            this.currentCell = this.playerData.vision_cells
+              .concat(this.playerData.mapped_cells)
+              .find(cell => cell.index === this.currentCell.index) 
           }
           for (let [index, unit] of this.selectedUnits.entries()) {
             let foundIndex = -1
-            for (const cell of this.playerData.mapped_cells) {
+            for (const cell of this.playerData.vision_cells) {
               if (cell.military_units[this.gameData.ally_id]) {
                 foundIndex = cell.military_units[this.gameData.ally_id].findIndex(u => u.uuid === unit.uuid)
                 if (foundIndex !== -1) {
@@ -204,8 +209,11 @@
       goToCapital () {
         EventBus.$emit('go-to-capital')
       },
+      goToCell() {
+        EventBus.$emit('go-to-cell')
+      }
     },
-    created () {
+    async created () {
       EventBus.$on('select-cell', cell => {
         this.currentCell = cell
       })
@@ -237,7 +245,17 @@
         } else {
           this.selectedUnits.splice(index, 1)
         }
-      }) 
-    },
+      })
+      EventBus.$on('add-units-selection', (units) => {
+        for(let unit of units) {
+          const index = this.selectedUnits.findIndex(u => u.uuid === unit.uuid)
+          if (index === -1) {
+            this.selectedUnits.push(unit)
+          }
+        }
+      })
+      await this.connect()
+      await this.play()
+    }
   }
 </script>

@@ -1,6 +1,9 @@
 <template>
-  <div id="controls">
-    <template v-if="currentCell && currentCell.soil">
+  <div id="controls"
+    tabindex="0"
+    @keydown.ctrl.65="addAllUnit()">
+    <template v-if="currentCell && currentCell.soil && gameData">
+      <!-- SOIL -->
       <div id="soil"
           :style="{
             'border-color': getHexagoneColor(currentCell.soil)
@@ -59,6 +62,7 @@
           </div>
         </div>
       </div>
+      <!-- BUILDING -->
       <div id="building" v-if="building">
         <div id="header-name">{{ building.name.toUpperCase() }}</div>
         <div class="properties">
@@ -97,15 +101,6 @@
             </div>
           </div>
           <div class="column-props">
-            <div class="property" v-if="Object.keys(building.productibles).length">
-              <span class="title-property">PRODUCTIBLES</span>
-            </div>
-            <div class="property" v-for="(product, index) in building.productibles" :key="`product-${index}`">
-              <button @click="produce(product)"
-                :disabled="!canProduce(product)">{{ `${product.toUpperCase()}` }}</button>
-            </div>
-          </div>
-          <div class="column-props">
             <div class="property" v-if="Object.keys(building.incomes).length">
               <span class="title-property">INCOMES</span>
             </div>
@@ -119,22 +114,39 @@
           </div>
         </div>
       </div>
-      <div id="buidable" v-if="buildables.length">
+      <!-- BUILDABLE -->
+      <div id="buidables" v-if="buildables.length && currentCell.owner === gameData.ally_id">
         <div id="header-name">BUILDABLES</div>
         <div class="properties">
-          <div class="column-props">
-            <div class="property" v-for="(buildable, index) in buildables" :key="`buildable-${index}`">
+          <div class="column-props productibles">
+            <div class="property productible" v-for="(buildable, index) in buildables" :key="`buildable-${index}`">
               <button @click="build(buildable)"
                 :disabled="!canBuild(buildable)">{{ `${buildable.toUpperCase()}` }}</button>
             </div>
           </div>
         </div>
       </div>
-      <!-- Units -->
-      <div class="units" v-if="militaries[gameData.ally_id] || militaries[gameData.enemy_id]">
+      <!-- PRODUCTS -->
+      <div id="productibles" v-if="productibles && Object.keys(productibles).length && currentCell.owner === gameData.ally_id">
+        <div id="header-name">PRODUCTIBLES</div>
+        <div class="properties">
+          <div class="column-props productibles">
+              <div class="property productible" v-for="(product, index) in building.productibles" :key="`product-${index}`">
+              <button @click="produce(product)"
+                :disabled="!canProduce(product)">{{ `${product.toUpperCase()}` }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- UNITS -->
+      <div class="units" 
+          v-if="(militaries[gameData.ally_id] && militaries[gameData.ally_id].length) 
+            || (militaries[gameData.enemy_id] && militaries[gameData.enemy_id].length)"
+      >
         <div id="header-name">MILITARY</div>
         <div class="properties">
-          <div class="column-props">
+          <div class="column-props" v-if="(militaries[gameData.ally_id] && militaries[gameData.ally_id].length)">
             <div class="title-property">ALLY</div>
             <template v-for="(unit, index) in militaries[gameData.ally_id]">
               <div :class="{'ally-unit-selected' : isUnitSelected(unit)}"
@@ -145,7 +157,7 @@
               </div>
             </template>
           </div>
-          <div class="column-props" v-if="militaries[gameData.enemy_id]">
+          <div class="column-props" v-if="militaries[gameData.enemy_id] && militaries[gameData.enemy_id].length">
             <div class="title-property">ENEMY</div>
             <div class="property unit" v-for="(unit, index) in militaries[gameData.enemy_id]" :key="`military-enemy-${index}`">
               {{ unit.name }} : {{ unit.pv }} / {{ unit.max_pv }}
@@ -153,10 +165,13 @@
           </div>
         </div>
       </div>
-      <div class="units" v-if="civilians[gameData.ally_id] || civilians[gameData.enemy_id]">
+      <div class="units"
+        v-if="(civilians[gameData.ally_id] && civilians[gameData.ally_id].length)
+          || (civilians[gameData.enemy_id] && civilians[gameData.enemy_id].length)"
+      >
         <div id="header-name">CIVILIAN</div>
         <div class="properties">
-          <div class="column-props">
+          <div class="column-props" v-if="(civilians[gameData.ally_id] && civilians[gameData.ally_id].length)">
             <div class="title-property">ALLY</div>
             <template v-for="(unit, index) in civilians[gameData.ally_id]">
               <div :class="{'ally-unit-selected' : isUnitSelected(unit)}"
@@ -167,7 +182,7 @@
               </div>
             </template>
           </div>
-          <div class="column-props" v-if="civilians[gameData.enemy_id]">
+          <div class="column-props" v-if="(civilians[gameData.enemy_id] && civilians[gameData.enemy_id].length)">
             <div class="title-property">ENEMY</div>
             <div class="property unit" v-for="(unit, index) in civilians[gameData.enemy_id]" :key="`civilian-enemy-${index}`">
               {{ unit.name }}
@@ -223,6 +238,7 @@ export default {
         "building_uid": building,
         "cell_id": this.currentCell.index
       })
+      console.log("build")
     },
     produce (product) {
       this.socket.emit("action", {
@@ -231,6 +247,7 @@ export default {
         "product_id": product,
         "cell_id": this.currentCell.index
       })
+      console.log("build")
     },
     remove () {
       this.socket.emit("action", {
@@ -244,6 +261,12 @@ export default {
     },
     toggleUnit (unit) {
       EventBus.$emit('add-unit-selection', unit)
+    },
+    addAllUnit () {
+      EventBus.$emit(
+        'add-units-selection',
+        this.currentCell.military_units.concat(this.currentCell.civilian_units)
+      )
     }
   },
   computed: {
@@ -252,6 +275,9 @@ export default {
     },
     building () {
       return this.currentCell.building
+    },
+    productibles () {
+      return this.currentCell.building ? this.currentCell.building.productibles : null
     },
     buildables () {
       return this.currentCell.soil.buildables
@@ -268,14 +294,17 @@ export default {
 
 <style lang="scss" scoped>
   #controls {
-    width: 100%;
     height: 15vh;
     background-color: burlywood;
     display: flex;
     align-items: center;
+    position: fixed;
+    bottom: 0;
+    padding: 5px;
+    border-radius: 0 5px 0 0;
   }
 
-  #soil, #building, #buidable, .units {
+  #soil, #building, #buidables, .units, #productibles {
     height: 90%;
     display: flex;
     flex-direction: column;
@@ -288,14 +317,17 @@ export default {
     background: darkseagreen;
     border-color: darkseagreen;
   }
+  #buidables, #productibles {
+    max-width: 102px;
+  }
   #header-name {
     min-height: 10%;
     font-size: 10px;
   }
   .column-props {
     padding: 0 3px;
-    overflow-y: auto;
     height: 100%;
+    overflow-y: auto;
   }
   .properties {
     height: 80%;
@@ -305,7 +337,7 @@ export default {
   }
   .property button {
     font-size: 8px;
-    margin-bottom: 2px;
+    margin-top: 2px;
     width: 100%;
   }
   .property {
@@ -322,6 +354,21 @@ export default {
     width: 100%;
   }
   .unit {
+    font-size: 7px;
+  }
+  .productibles {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    overflow-y: auto;
+    margin-top: 2px;
+  }
+  .productible {
+    width: 30px;
+    height: 30px;
+    word-break: break-all;
+  }
+  .productible button {
     font-size: 7px;
   }
   .ally-unit {
