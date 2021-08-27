@@ -2,21 +2,7 @@
   <div id="board" >
     <div id="map"
         ref="map"
-        @wheel="zooming"
-        tabindex="0"
-        @keydown.up.exact="enterBorder('TOP')"
-        @keyup.up.exact="leaveBorder('TOP')"
-        @keydown.left.exact="enterBorder('LEFT')"
-        @keyup.left.exact="leaveBorder('LEFT')"
-        @keydown.right.exact="enterBorder('RIGHT')"
-        @keyup.right.exact="leaveBorder('RIGHT')"
-        @keydown.down.exact="enterBorder('BOTTOM')"
-        @keyup.down.exact="enterBorder('BOTTOM')"
-        @keydown.ctrl.up.exact="moveCurrentCell('TOP')"
-        @keydown.ctrl.left.exact="moveCurrentCell('LEFT')"
-        @keydown.ctrl.right.exact="moveCurrentCell('RIGHT')"
-        @keydown.ctrl.down.exact="moveCurrentCell('BOTTOM')"
-      >
+        @wheel="zooming">
       <div v-if="gameData" id="cells"
           ref="cells"
           :style="{
@@ -203,47 +189,6 @@ export default {
     leaveBorder (direction) {
       this.border[direction] = false
     },
-    moveCurrentCell (direction) {
-      if (!this.currentCell) {
-        return
-      }
-      let x = this.currentCell.index % this.gameData.width
-      let y = parseInt(this.currentCell.index / this.gameData.height)
-      switch (direction) {
-        case 'TOP':
-          if (y - 1 < 0) {
-            return
-          }
-          y--
-          break
-        case 'BOTTOM':
-          if (y + 1 > this.gameData.height - 1) {
-            return
-          }
-          y++
-          break
-        case 'LEFT':
-          if (x - 1 < 0) {
-            return
-          }
-          x--
-          break
-        case 'RIGHT':
-          if (x + 1 > this.gameData.width - 1) {
-            return
-          }
-          x++
-          break
-      }
-      let cell = this.visionCells
-        .concat(this.mappedCells)
-        .find(cell => cell.index === x + (y * this.gameData.width)) 
-      if (cell) {
-        EventBus.$emit("select-cell", cell)
-      } else {
-        EventBus.$emit("select-cell", {x: x, y: y, index: x + (y * this.gameData.width)})
-      }
-    },
     moveMap () {
       if (this.border['TOP']) {
         this.$refs.map.scrollTop -= this.moveSpeed
@@ -307,6 +252,12 @@ export default {
     window.requestAnimationFrame(this.moveMap)
     EventBus.$on('go-to-capital', () => {
       this.goToCapital()
+    })
+    EventBus.$on('enter-border', (direction) => {
+      this.enterBorder(direction)
+    })   
+    EventBus.$on('leave-border', (direction) => {
+      this.leaveBorder(direction)
     })   
     EventBus.$on('go-to-cell', () => {
       if (this.currentCell) {

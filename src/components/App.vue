@@ -1,7 +1,48 @@
 <template>
   <div id="app" tabindex="0"
       @keyup.ctrl.space.exact="goToCapital()"
-      @keyup.space.exact="goToCell">
+      @keyup.space.exact="goToCell"
+      @keydown.ctrl.65.exact.prevent="addAllUnit()"
+      @keydown.ctrl.shift.65.exact.prevent="addAllMilititariesUnit()"
+      @keydown.shift.alt.65.exact.prevent="addAllCiviliansUnit()"
+      @keydown.ctrl.49.exact.prevent="groupUnit(1)"
+      @keydown.ctrl.50.exact.prevent="groupUnit(2)"
+      @keydown.ctrl.51.exact.prevent="groupUnit(3)"
+      @keydown.ctrl.52.exact.prevent="groupUnit(4)"
+      @keydown.ctrl.53.exact.prevent="groupUnit(5)"
+      @keydown.ctrl.54.exact.prevent="groupUnit(6)"
+      @keydown.ctrl.55.exact.prevent="groupUnit(7)"
+      @keydown.ctrl.56.exact.prevent="groupUnit(8)"
+      @keydown.ctrl.shift.49.exact.prevent="clearGroupUnit(1)"
+      @keydown.ctrl.shift.50.exact.prevent="clearGroupUnit(2)"
+      @keydown.ctrl.shift.51.exact.prevent="clearGroupUnit(3)"
+      @keydown.ctrl.shift.52.exact.prevent="clearGroupUnit(4)"
+      @keydown.ctrl.shift.53.exact.prevent="clearGroupUnit(5)"
+      @keydown.ctrl.shift.54.exact.prevent="clearGroupUnit(6)"
+      @keydown.ctrl.shift.55.exact.prevent="clearGroupUnit(7)"
+      @keydown.ctrl.shift.56.exact.prevent="clearGroupUnit(8)"
+      @keydown.49.exact.prevent="selectGroup(1)"
+      @keydown.50.exact.prevent="selectGroup(2)"
+      @keydown.51.exact.prevent="selectGroup(3)"
+      @keydown.52.exact.prevent="selectGroup(4)"
+      @keydown.53.exact.prevent="selectGroup(5)"
+      @keydown.54.exact.prevent="selectGroup(6)"
+      @keydown.55.exact.prevent="selectGroup(7)"
+      @keydown.56.exact.prevent="selectGroup(8)"
+      @keydown.enter.exact="moveUnit()"
+      @keydown.backspace.exact="clearSelectedUnits()"
+      @keydown.up.exact="enterBorder('TOP')"
+      @keyup.up.exact="leaveBorder('TOP')"
+      @keydown.left.exact="enterBorder('LEFT')"
+      @keyup.left.exact="leaveBorder('LEFT')"
+      @keydown.right.exact="enterBorder('RIGHT')"
+      @keyup.right.exact="leaveBorder('RIGHT')"
+      @keydown.down.exact="enterBorder('BOTTOM')"
+      @keyup.down.exact="leaveBorder('BOTTOM')"
+      @keydown.ctrl.up.exact="moveCurrentCell('TOP')"
+      @keydown.ctrl.left.exact="moveCurrentCell('LEFT')"
+      @keydown.ctrl.right.exact="moveCurrentCell('RIGHT')"
+      @keydown.ctrl.down.exact="moveCurrentCell('BOTTOM')">
     <header-bar v-if="playerData"
       :stocks="playerData.stocks"
     ></header-bar>
@@ -23,6 +64,7 @@
         <selected-units
           :selectedUnits="selectedUnits"
           :gameData="gameData"
+          :groups="groups"
           :socket="socket">
         </selected-units>
         <control
@@ -40,9 +82,14 @@
       <span id="title">WHATHEX</span>
       <button v-if="!message" type="button" class="button-menu" @click="connect()">CONNECT</button>
       <template v-if="message">
-        <button v-if="!waiting" type="button" class="button-menu" @click="play()">PLAY</button>
+        <button v-if="!waiting && connected" type="button" class="button-menu" @click="play()">PLAY</button>
         <span id="message">{{ message }}</span>
       </template>
+    </div>
+    <div id="disconnected" v-if="!connected && playerData">
+      <span id="message">DISCONNECTED</span>
+      <span id="message">{{ message }}</span>
+      <span id="message">ATTEMPT {{ currentAttempt }}/{{ attemptMax }}</span>
     </div>
   </div>
 </template>
@@ -63,7 +110,7 @@
     width: 100vw;
     height: 100vh;
   }
-  #connection {
+  #connection, #disconected {
     width: 100vw;
     height: 100vh;
     background-color: aquamarine;
@@ -137,14 +184,31 @@
         currentCell: null,
         socket: null,
         connected: false,
+        attemptMax: 10,
+        currentAttempt: 0,
         waiting: false,
         message: '',
-        selectedUnits: []
+        selectedUnits: [],
+        groups: {
+          "1": [],
+          "2": [],
+          "3": [],
+          "4": [],
+          "5": [],
+          "6": [],
+          "7": [],
+          "8": [],
+        }
       }
     },
     methods: {
       async connect () {
-        this.socket = await io("ws://localhost:8765/")
+        this.socket = await io("ws://localhost:8765/", {
+          reconnection: true,
+          reconnectionDelay: 1000,
+          reconnectionDelayMax: 5000,
+          reconnectionAttempts: this.attemptMax,
+        })
         this.message = "CONNECTING ..."
         this.socket.on('connect', () => {
           this.connected = true
@@ -153,13 +217,23 @@
           this.message = "ERROR CANNOT JOIN THE SERVER"
         })
         this.socket.on('disconnect', () => {
-          this.message = "ERROR CANNOT JOIN THE SERVER"
-          this.waiting = false
+          console.log('disconnected')
+          this.message = "ERROR DISCONNECT CANNOT JOIN THE SERVER"
           this.connected = false
         })
         this.socket.on('connected', (event) => {
           this.message = event.message
         })
+        this.socket.on('reconnect', (event) => {
+          this.connected = true
+          this.message = ""
+        })
+        this.socket.on("reconnect_failed", () => {
+          location.reload()
+        });
+        this.socket.on("reconnect_attempt", (attempt) => {
+          this.currentAttempt = attempt
+        });
         this.socket.on('waiting', (event) => {
           this.waiting = true
           this.message = event.message
@@ -211,6 +285,130 @@
       },
       goToCell() {
         EventBus.$emit('go-to-cell')
+      },
+      addAllUnit () {
+        if(!this.currentCell) {
+          return
+        }
+        let militaries = !this.currentCell.military_units || !this.currentCell.military_units[this.gameData.ally_id]
+            ? []
+            : this.currentCell.military_units[this.gameData.ally_id]
+        let civilians = !this.currentCell.civilian_units || !this.currentCell.civilian_units[this.gameData.ally_id]
+            ? []
+            : this.currentCell.civilian_units[this.gameData.ally_id]
+        
+        EventBus.$emit(
+          'add-units-selection',
+          militaries.concat(civilians)
+        )
+      },
+      addAllMilititariesUnit () {
+        if(!this.currentCell) {
+          return
+        }
+        let militaries = !this.currentCell.military_units || !this.currentCell.military_units[this.gameData.ally_id]
+            ? []
+            : this.currentCell.military_units[this.gameData.ally_id]
+        
+        EventBus.$emit(
+          'add-units-selection',
+          militaries
+        )
+      },
+      addAllCiviliansUnit () {
+        console.log("passe")
+        if(!this.currentCell) {
+          return
+        }
+        let civilians = !this.currentCell.civilian_units || !this.currentCell.civilian_units[this.gameData.ally_id]
+            ? []
+            : this.currentCell.civilian_units[this.gameData.ally_id]
+        
+        EventBus.$emit(
+          'add-units-selection',
+          civilians
+        )
+      },
+      moveCurrentCell (direction) {
+        if (!this.currentCell) {
+          return
+        }
+        let x = this.currentCell.index % this.gameData.width
+        let y = parseInt(this.currentCell.index / this.gameData.height)
+        switch (direction) {
+          case 'TOP':
+            if (y - 1 < 0) {
+              return
+            }
+            y--
+            break
+          case 'BOTTOM':
+            if (y + 1 > this.gameData.height - 1) {
+              return
+            }
+            y++
+            break
+          case 'LEFT':
+            if (x - 1 < 0) {
+              return
+            }
+            x--
+            break
+          case 'RIGHT':
+            if (x + 1 > this.gameData.width - 1) {
+              return
+            }
+            x++
+            break
+        }
+        let cell = this.playerData.vision_cells
+          .concat(this.playerData.mapped_cells)
+          .find(c => c.index === x + (y * this.gameData.width)) 
+        if (cell) {
+          this.currentCell = cell
+        } else {
+          this.currentCell =  {x: x, y: y, index: x + (y * this.gameData.width)}
+        }
+      },
+      clearSelectedUnits () {
+        this.selectedUnits = []
+      },
+      addUnitToGroup (group) {
+        if (this.groups[group] === undefined) {
+          return
+        }
+        for(let unit of this.selectedUnits) {
+          if (this.groups[group].findIndex(u => u === unit) === -1) {
+            this.groups[group].push(unit)
+          }
+        }
+      },
+      groupUnit (group) {
+        if (this.groups[group] === undefined) {
+          return
+        }
+        this.groups[group] = this.selectedUnits
+      },
+      clearGroupUnit (group) {
+        if (this.groups[group] === undefined) {
+          return
+        }
+        this.groups[group] = []
+      },
+      selectGroup (group) {
+        if (this.groups[group] === undefined && this.groups[group].length) {
+          return
+        }
+        this.selectedUnits = this.groups[group]
+      },
+      enterBorder (direction) {
+        EventBus.$emit('enter-border', direction)
+      },
+      leaveBorder (direction) {
+        EventBus.$emit('leave-border', direction)
+      },
+      moveUnit () {
+        EventBus.$emit("move-units", this.currentCell)
       }
     },
     async created () {
@@ -224,10 +422,9 @@
         }
       })
       EventBus.$on('clear-unit-selection', () => {
-        this.selectedUnits = []
+        this.clearSelectedUnits()
       })
       EventBus.$on("move-units", (cell) => {
-        console.log(cell)
         if (!this.playerData || !this.selectedUnits) {
           return
         }

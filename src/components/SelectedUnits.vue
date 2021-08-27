@@ -2,13 +2,18 @@
   <div id="selected-units">
     <div class="unit" v-for="unit in selectedUnits" 
       :key="unit.uuid"
-      @dblclick="removeUnit(unit)"
+      @click="removeUnit(unit)"
       >
         {{ unit.name }}<template v-if="unit.pv"> : {{ unit.pv }}/{{ unit.max_pv }}</template>
     </div>
     <div id="controls" v-if="selectedUnits.length > 0">
       <button @click="removeAll">Clear</button>
       <button @click="stopUnits">Stop</button>
+    </div>
+    <div id="groups">
+      <template v-for="(group, index) in groups">
+        <div @click="selectUnits(group)" class="group" v-if="group.length" :key="index"> {{ index }} </div>
+      </template>
     </div>
   </div>
 </template>
@@ -23,6 +28,7 @@ name: "selectedUnits",
     selectedUnits: Array,
     gameData: Object,
     socket: Object,
+    groups: Object,
   },
   methods: {
     removeAll () {
@@ -37,6 +43,13 @@ name: "selectedUnits",
         "uuid": this.gameData.uuid,
         "unit_uuids": this.selectedUnits.map(u => u.uuid)
       })
+    },
+    selectUnits (group) {
+      EventBus.$emit('clear-unit-selection')
+      EventBus.$emit(
+        'add-units-selection',
+        group
+      )
     }
   },
   computed: {
@@ -57,7 +70,6 @@ name: "selectedUnits",
   }
   .unit {
     font-size: 7px;
-    background: gainsboro;
     border: 1px solid gray;
     padding: 2px;
     margin-top: 5px;
@@ -75,5 +87,20 @@ name: "selectedUnits",
   }
   #controls > * {
     font-size: 8px;
+    margin: 2px;
+  }
+  #groups {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+  .group {
+    font-size: 7px;
+    border: 1px solid gray;
+    padding: 5px;
+    margin: 5px;
+    border-radius: 2px;
+    cursor: pointer;
+    background: lightslategrey;
   }
 </style>

@@ -1,7 +1,5 @@
 <template>
-  <div id="controls"
-    tabindex="0"
-    @keydown.ctrl.65="addAllUnit()">
+  <div id="controls">
     <template v-if="currentCell && currentCell.soil && gameData">
       <!-- SOIL -->
       <div id="soil"
@@ -262,12 +260,6 @@ export default {
     toggleUnit (unit) {
       EventBus.$emit('add-unit-selection', unit)
     },
-    addAllUnit () {
-      EventBus.$emit(
-        'add-units-selection',
-        this.currentCell.military_units.concat(this.currentCell.civilian_units)
-      )
-    }
   },
   computed: {
     soil () {
