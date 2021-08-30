@@ -59,13 +59,15 @@
         <production
           :currentCell="currentCell"
           :gameData="gameData"
-          :socket="socket">
+          :socket="socket"
+          :indexAction="indexAction">
         </production>
         <selected-units
           :selectedUnits="selectedUnits"
           :gameData="gameData"
           :groups="groups"
-          :socket="socket">
+          :socket="socket"
+          :indexAction="indexAction">
         </selected-units>
         <control
           v-if="currentCell && currentCell.soil"
@@ -73,23 +75,28 @@
           :gameData="gameData"
           :socket="socket"
           :currentCell="currentCell"
-          :selectedUnits="selectedUnits">
+          :selectedUnits="selectedUnits"
+          :indexAction="indexAction">
         </control>
       </div>
       <!-- <side-bar :currentCell=currentCell></side-bar> -->
     </div>
     <div id="connection" v-else>
-      <span id="title">WHATHEX</span>
+      <span class="title">WHATHEX</span>
       <button v-if="!message" type="button" class="button-menu" @click="connect()">CONNECT</button>
       <template v-if="message">
         <button v-if="!waiting && connected" type="button" class="button-menu" @click="play()">PLAY</button>
-        <span id="message">{{ message }}</span>
+        <span class="message">{{ message }}</span>
       </template>
     </div>
-    <div id="disconnected" v-if="!connected && playerData">
-      <span id="message">DISCONNECTED</span>
-      <span id="message">{{ message }}</span>
-      <span id="message">ATTEMPT {{ currentAttempt }}/{{ attemptMax }}</span>
+    <div id="disconnected" v-if="!connected && playerData && !winner">
+      <span class="title">DISCONNECTED</span>
+      <span class="message">ATTEMPT {{ currentAttempt }}/{{ attemptMax }}</span>
+    </div>
+    <div id="winner" v-if="winner">
+      <span class="title" v-if="winner.id === gameData.ally_id">WIN</span>
+      <span class="title" v-else>LOOSE</span>
+      <button type="button" class="button-menu" @click="connect()">PLAY AGAIN</button>
     </div>
   </div>
 </template>
@@ -110,7 +117,7 @@
     width: 100vw;
     height: 100vh;
   }
-  #connection, #disconected {
+  #connection, #disconnected, #winner {
     width: 100vw;
     height: 100vh;
     background-color: aquamarine;
@@ -119,11 +126,18 @@
     align-items: center;
     flex-direction: column;
   }
-  #title {
+  #disconnected, #winner {
+    position: absolute;
+    background: #00000044;
+    top: 0;
+    word-break: break-word;
+    text-align: center;
+  }
+  .title {
     font-size: 150px;
     margin-bottom: 2%;
   }
-  #message {
+  .message {
     font-size: 30px;
   }
   .button-menu {
@@ -189,6 +203,7 @@
         waiting: false,
         message: '',
         selectedUnits: [],
+        indexAction: 0,
         groups: {
           "1": [],
           "2": [],
@@ -198,27 +213,37 @@
           "6": [],
           "7": [],
           "8": [],
-        }
+        },
+        winner: null
       }
     },
     methods: {
       async connect () {
+        this.connected = false
+        this.playerData = null
+        this.winner = null
+        this.currentAttempt = 0
+        this.waiting = false
+        this.message = ''
+
         this.socket = await io("ws://localhost:8765/", {
           reconnection: true,
           reconnectionDelay: 1000,
-          reconnectionDelayMax: 5000,
+          reconnectionDelayMax: 1000,
           reconnectionAttempts: this.attemptMax,
         })
         this.message = "CONNECTING ..."
         this.socket.on('connect', () => {
           this.connected = true
+          this.playerData = null
+          this.winner = null
+          this.currentAttempt = 0
         })
         this.socket.on('connect_error', () => {
           this.message = "ERROR CANNOT JOIN THE SERVER"
+          this.currentAttempt++
         })
         this.socket.on('disconnect', () => {
-          console.log('disconnected')
-          this.message = "ERROR DISCONNECT CANNOT JOIN THE SERVER"
           this.connected = false
         })
         this.socket.on('connected', (event) => {
@@ -226,7 +251,7 @@
         })
         this.socket.on('reconnect', (event) => {
           this.connected = true
-          this.message = ""
+          this.currentAttempt = 0
         })
         this.socket.on("reconnect_failed", () => {
           location.reload()
@@ -238,13 +263,24 @@
           this.waiting = true
           this.message = event.message
         })
+        this.socket.on('winner', (data) => {
+          console.log(data)
+          this.winner = data
+        })
         this.socket.on('player', (data) => {
+          // Reset index action
+          this.indexAction = 0
+
+          // refresh data of the game
           this.playerData = data
+
+          // refresh the current cell
           if (this.currentCell && this.currentCell.soil) {
             this.currentCell = this.playerData.vision_cells
               .concat(this.playerData.mapped_cells)
               .find(cell => cell.index === this.currentCell.index) 
           }
+          // refresh the selected unit
           for (let [index, unit] of this.selectedUnits.entries()) {
             let foundIndex = -1
             for (const cell of this.playerData.vision_cells) {
@@ -278,6 +314,7 @@
       play () {
         if (this.socket) {
           this.socket.emit("play", "play")
+          this.winner = null
         }
       },
       goToCapital () {
@@ -429,11 +466,26 @@
           return
         }
         this.socket.emit("action", {
+          "index": this.indexAction,
           "kind": "MOVE",
           "uuid": this.gameData.uuid,
           "cell_id": cell.index,
           "unit_uuids": this.selectedUnits.map(u => u.uuid)
         })
+        this.indexAction++
+      })
+      EventBus.$on("add-move-units", (cell) => {
+        if (!this.playerData || !this.selectedUnits) {
+          return
+        }
+        this.socket.emit("action", {
+          "index": this.indexAction,
+          "kind": "ADD_MOVE",
+          "uuid": this.gameData.uuid,
+          "cell_id": cell.index,
+          "unit_uuids": this.selectedUnits.map(u => u.uuid)
+        })
+        this.indexAction++
       })
       EventBus.$on('add-unit-selection', (unit) => {
         const index = this.selectedUnits.findIndex(u => u.uuid === unit.uuid)
@@ -451,8 +503,11 @@
           }
         }
       })
-      await this.connect()
-      await this.play()
+      EventBus.$on('increment-index-action', () => {
+        this.indexAction++
+      })
+      // await this.connect()
+      // await this.play()
     }
   }
 </script>

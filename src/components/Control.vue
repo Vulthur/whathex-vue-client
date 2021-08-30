@@ -137,7 +137,7 @@
           </div>
         </div>
       </div>
-      <!-- UNITS -->
+      <!-- MILITARY -->
       <div class="units" 
           v-if="(militaries[gameData.ally_id] && militaries[gameData.ally_id].length) 
             || (militaries[gameData.enemy_id] && militaries[gameData.enemy_id].length)"
@@ -146,14 +146,16 @@
         <div class="properties">
           <div class="column-props" v-if="(militaries[gameData.ally_id] && militaries[gameData.ally_id].length)">
             <div class="title-property">ALLY</div>
-            <template v-for="(unit, index) in militaries[gameData.ally_id]">
-              <div :class="{'ally-unit-selected' : isUnitSelected(unit)}"
-                  class="property unit ally-unit"
-                  :key="`military-ally-${index}`"
-                  @click="toggleUnit(unit)">
-                {{ unit.name }} : {{ unit.pv }}/{{ unit.max_pv }}
-              </div>
-            </template>
+            <draggable v-model="militaries[gameData.ally_id]" @end="orderUnit">
+              <template v-for="(unit, index) in militaries[gameData.ally_id]">
+                <div :class="{'ally-unit-selected' : isUnitSelected(unit)}"
+                    class="property unit ally-unit"
+                    :key="`military-ally-${index}`"
+                    @click="toggleUnit(unit)">
+                  {{ unit.name }} : {{ unit.pv }}/{{ unit.max_pv }}
+                </div>
+              </template>
+            </draggable>
           </div>
           <div class="column-props" v-if="militaries[gameData.enemy_id] && militaries[gameData.enemy_id].length">
             <div class="title-property">ENEMY</div>
@@ -163,6 +165,7 @@
           </div>
         </div>
       </div>
+      <!-- CIVILIAN -->
       <div class="units"
         v-if="(civilians[gameData.ally_id] && civilians[gameData.ally_id].length)
           || (civilians[gameData.enemy_id] && civilians[gameData.enemy_id].length)"
@@ -195,6 +198,7 @@
 <script>
 import { getHexagoneColor } from '../common'
 import { EventBus } from "../index"
+import draggable from 'vuedraggable'
 
 export default {
   name: "controls",
@@ -205,7 +209,11 @@ export default {
     allyId: String,
     enemyId: String,
     socket: Object,
-    selectedUnits: Array
+    selectedUnits: Array,
+    indexAction: Number,
+  },
+  components: {
+    draggable,
   },
   methods: {
     getHexagoneColor (soil) {
@@ -231,28 +239,45 @@ export default {
     },
     build (building) {
       this.socket.emit("action", {
+        "index": this.indexAction,
         "kind": "ADD_BUILDING",
         "uuid": this.gameData.uuid,
         "building_uid": building,
         "cell_id": this.currentCell.index
       })
-      console.log("build")
+      EventBus.$emit('increment-index-action')
     },
     produce (product) {
       this.socket.emit("action", {
+        "index": this.indexAction,
         "kind": "ADD_PRODUCT",
         "uuid": this.gameData.uuid,
         "product_id": product,
         "cell_id": this.currentCell.index
       })
-      console.log("build")
+      EventBus.$emit('increment-index-action')
     },
     remove () {
       this.socket.emit("action", {
+        "index": this.indexAction,
         "kind": "REMOVE_BUILDING",
         "uuid": this.gameData.uuid,
         "cell_id": this.currentCell.index
       })
+      EventBus.$emit('increment-index-action')
+    },
+    orderUnit () {
+      if (!this.militaries[this.gameData.ally_id] || !this.militaries[this.gameData.ally_id].length) {
+        return
+      }
+      this.socket.emit("action", {
+        "index": this.indexAction,
+        "kind": "ORDER",
+        "uuid": this.gameData.uuid,
+        "cell_id": this.currentCell.index,
+        "unit_uuids": this.militaries[this.gameData.ally_id].map(u => u.uuid)
+      })
+      EventBus.$emit('increment-index-action')
     },
     isUnitSelected (unit) {
       return this.selectedUnits.find(u => u.uuid == unit.uuid)

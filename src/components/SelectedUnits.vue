@@ -29,6 +29,7 @@ name: "selectedUnits",
     gameData: Object,
     socket: Object,
     groups: Object,
+    indexAction: Number,
   },
   methods: {
     removeAll () {
@@ -39,10 +40,12 @@ name: "selectedUnits",
     },
     stopUnits () {
       this.socket.emit("action", {
+        "index": this.indexAction,
         "kind": "STOP",
         "uuid": this.gameData.uuid,
         "unit_uuids": this.selectedUnits.map(u => u.uuid)
       })
+      EventBus.$emit('increment-index-action')
     },
     selectUnits (group) {
       EventBus.$emit('clear-unit-selection')

@@ -15,28 +15,36 @@
 </template>
 
 <script>
+
+import { EventBus } from "../index"
+
 export default {
 name: "production",
   props: {
     currentCell: Object,
     socket: Object,
-    gameData: Object
+    gameData: Object,
+    indexAction: Number,
   },
   methods: {
     cancelBuilding () {
       this.socket.emit("action", {
+        "index": this.indexAction,
         "kind": "CANCEL_BUILDING",
         "uuid": this.gameData.uuid,
         "cell_id": this.currentCell.index
       })
+      EventBus.$emit('increment-index-action')
     },
     cancelProduct (index) {
       this.socket.emit("action", {
+        "index": this.indexAction,
         "kind": "CANCEL_PRODUCT",
         "uuid": this.gameData.uuid,
         "index": index,
         "cell_id": this.currentCell.index
       })
+      EventBus.$emit('increment-index-action')
     }
   },
   computed: {

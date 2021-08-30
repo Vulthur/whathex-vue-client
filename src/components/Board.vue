@@ -44,16 +44,16 @@
           </mapped-cell>
         </template>
       </div>
-      <template v-for="(unit, index) in selectedUnits">
-        <template v-if="unit.destination">
-          <svg :key="index" 
+      <template v-for="(unit, indexUnit) in selectedUnits">
+        <template v-for="(destination, indexDestination) in unit.destinations">
+          <svg :key="`${indexUnit}-${indexDestination}`"
               version="1.1"
               class="lines"
               :style="{
                 left: `${unit.cell.x * height}px`,
                 top: unit.cell.x % 2 == 0 ? `${unit.cell.y * width}px` : `${(unit.cell.y * width) + (width / 2)}px`,
               }">
-            <line :x1="height / 2" :y1="width / 2" :x2="200" :y2="200" class="line"/> 
+            <circle r="10" fill="red"/>
           </svg>
         </template>
       </template>
@@ -233,6 +233,9 @@ export default {
       this.goToCell(this.capital)
     },
     goToCell (cell) {
+      if (!this.$refs.map) {
+        return
+      }
       this.$refs.map.scrollLeft = cell.x * this.height - (window.innerWidth / 2) - this.offset
       this.$refs.map.scrollTop = cell.x % 2 == 0 
         ? cell.y * this.width - (window.innerHeight / 2) + this.offset

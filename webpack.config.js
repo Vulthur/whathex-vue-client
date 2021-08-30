@@ -12,7 +12,10 @@ module.exports = {
   devServer: {
     contentBase: path.join(__dirname, 'dist'),
     compress: true,
-    port: 9000
+    port: 9000,
+    headers: {
+      "Access-Control-Allow-Origin": "http://localhost:8765"
+    },
   },
   output: {
     path: path.resolve(__dirname, 'dist/'),
