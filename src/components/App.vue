@@ -91,7 +91,7 @@
     </div>
     <div id="disconnected" v-if="!connected && playerData && !winner">
       <span class="title">DISCONNECTED</span>
-      <span class="message">ATTEMPT {{ currentAttempt }}/{{ attemptMax }}</span>
+      <span class="message">RECONNECTION ATTEMPT {{ currentAttempt }}/{{ attemptMax }}</span>
     </div>
     <div id="winner" v-if="winner">
       <span class="title" v-if="winner.id === gameData.ally_id">WIN</span>
@@ -242,6 +242,9 @@
         this.socket.on('connect_error', () => {
           this.message = "ERROR CANNOT JOIN THE SERVER"
           this.currentAttempt++
+          if (this.currentAttempt >= this.attemptMax) {
+            location.reload()
+          }
         })
         this.socket.on('disconnect', () => {
           this.connected = false
