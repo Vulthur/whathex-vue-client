@@ -17,7 +17,7 @@
               :cellWidth="width"
               :cellHeight="height"
               :offset="offset"
-            :cell="{x: indexJ, y: indexI, index: indexJ + (indexI * gameData.width)}">
+              :cell="{x: indexJ, y: indexI, index: indexJ + (indexI * gameData.width)}">
             </empty-cell>
           </template>
         </template>
@@ -43,20 +43,42 @@
             :cell="cell">
           </mapped-cell>
         </template>
-      </div>
-      <template v-for="(unit, indexUnit) in selectedUnits">
-        <template v-for="(destination, indexDestination) in unit.destinations">
-          <svg :key="`${indexUnit}-${indexDestination}`"
-              version="1.1"
-              class="lines"
-              :style="{
-                left: `${unit.cell.x * height}px`,
-                top: unit.cell.x % 2 == 0 ? `${unit.cell.y * width}px` : `${(unit.cell.y * width) + (width / 2)}px`,
-              }">
-            <circle r="10" fill="red"/>
-          </svg>
+        <!-- PATH CELL -->
+        <template v-if="showPath">
+          <template v-for="cell in pathCell">
+            <path-cell :key="`path-${cell.x}-${cell.y}`"
+              :cellWidth="width"
+              :cellHeight="height"
+              :offset="offset"
+              :cell="{x: cell.x, y: cell.y, index: cell.x + (cell.y * gameData.width)}">
+            </path-cell>
+          </template>
+          <template v-for="(unit, indexUnit) in selectedUnits">
+            <template v-for="(destination, indexDestination) in [...unit.destinations].reverse()">
+              <svg :key="`${indexUnit}-${indexDestination}`"
+                  version="1.1"
+                  class="destination"
+                  viewBox="0 0 20 20" :width="20" :height="20"
+                  :style="{
+                    left: `${destination.x * height + offset + height / 2}px`,
+                    top: destination.x % 2 == 0 
+                      ? `${destination.y * width + (width / 2) + offset}px` 
+                      : `${(destination.y * width) + width + offset}px`,
+                  }">
+                <circle cx="50%" cy="50%" r="10" fill="#AA0011"/>
+                <text x="50%"
+                    y="50%"
+                    dominant-baseline="middle"
+                    text-anchor="middle"
+                    fill="white"
+                    font-size="9px">
+                  {{ indexDestination }}
+                </text>
+              </svg>
+            </template>
+          </template>
         </template>
-      </template>
+      </div>
     </div>
     <div class="border"
       @mouseenter="enterBorder('TOP')"
@@ -144,6 +166,7 @@
 import Cell from "./Cell"
 import EmptyCell from "./EmptyCell"
 import MappedCell from "./MappedCell"
+import PathCell from "./PathCell"
 import { EventBus } from "../index"
 
 export default {
@@ -151,12 +174,15 @@ export default {
   components: {
     Cell,
     EmptyCell,
-    MappedCell
+    MappedCell,
+    PathCell
   },
   props: {
     gameData: Object,
+    showPath: Boolean,
     capital: Object,
     mappedCells: Array,
+    pathCell: Array,
     visionCells: Array,
     currentCell: Object,
     selectedUnits: Array
@@ -272,7 +298,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   #board {
     width: 100%;
     height: 100vh;
@@ -296,7 +322,7 @@ export default {
     position: fixed;
     z-index: 2;
   }
-  .lines {
+  .destination {
     position: absolute;
   }
   .line {

@@ -15,7 +15,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   #side-bar {
     width: 20vw;
     height: 100vh;

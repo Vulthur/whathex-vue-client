@@ -55,7 +55,7 @@ name: "production",
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   #production {
     position: fixed;
     bottom: 19vh;

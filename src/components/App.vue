@@ -1,7 +1,9 @@
 <template>
   <div id="app" tabindex="0"
+      @contextmenu.prevent
       @keyup.ctrl.space.exact="goToCapital()"
       @keyup.space.exact="goToCell"
+      @keyup.80.exact="toggleShowPath"
       @keydown.ctrl.65.exact.prevent="addAllUnit()"
       @keydown.ctrl.shift.65.exact.prevent="addAllMilititariesUnit()"
       @keydown.shift.alt.65.exact.prevent="addAllCiviliansUnit()"
@@ -54,6 +56,8 @@
           :capital="playerData.capital"
           :selectedUnits="selectedUnits"
           :currentCell="currentCell"
+          :showPath="showPath"
+          :pathCell="pathCell"
           :gameData="gameData"
         ></board>
         <production
@@ -214,7 +218,9 @@
           "7": [],
           "8": [],
         },
-        winner: null
+        winner: null,
+        showPath: true,
+        pathCell: [],
       }
     },
     methods: {
@@ -325,6 +331,9 @@
       },
       goToCell() {
         EventBus.$emit('go-to-cell')
+      },
+      toggleShowPath() {
+        this.showPath = !this.showPath
       },
       addAllUnit () {
         if(!this.currentCell) {
@@ -449,7 +458,21 @@
       },
       moveUnit () {
         EventBus.$emit("move-units", this.currentCell)
-      }
+      },
+    },
+    watch: {
+      selectedUnits: function (val) {
+        this.pathCell = []
+        for(const units of this.selectedUnits) {
+          for (const cell of units.destinations) {
+
+            if (!this.pathCell.find(c => c.x === cell.x && c.y === cell.y)) {
+              this.pathCell.push(cell)
+            }
+          }
+        }
+        console.log(this.pathCell)
+      },
     },
     async created () {
       EventBus.$on('select-cell', cell => {
@@ -509,8 +532,8 @@
       EventBus.$on('increment-index-action', () => {
         this.indexAction++
       })
-      // await this.connect()
-      // await this.play()
+      await this.connect()
+      await this.play()
     }
   }
 </script>
