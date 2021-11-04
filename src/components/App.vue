@@ -33,6 +33,7 @@
       @keydown.56.exact.prevent="selectGroup(8)"
       @keydown.enter.exact="moveUnit()"
       @keydown.backspace.exact="clearSelectedUnits()"
+      @keydown.shift.backspace.exact="stopSelectedUnit()"
       @keydown.up.exact="enterBorder('TOP')"
       @keyup.up.exact="leaveBorder('TOP')"
       @keydown.left.exact="enterBorder('LEFT')"
@@ -285,9 +286,7 @@
 
           // refresh the current cell
           if (this.currentCell && this.currentCell.soil) {
-            this.currentCell = this.playerData.vision_cells
-              .concat(this.playerData.mapped_cells)
-              .find(cell => cell.index === this.currentCell.index) 
+            this.currentCell = this.knowCells.find(cell => cell.index === this.currentCell.index) 
           }
           // refresh the selected unit
           for (let [index, unit] of this.selectedUnits.entries()) {
@@ -365,7 +364,6 @@
         )
       },
       addAllCiviliansUnit () {
-        console.log("passe")
         if(!this.currentCell) {
           return
         }
@@ -410,9 +408,7 @@
             x++
             break
         }
-        let cell = this.playerData.vision_cells
-          .concat(this.playerData.mapped_cells)
-          .find(c => c.index === x + (y * this.gameData.width)) 
+        let cell = this.knowCells.find(c => c.index === x + (y * this.gameData.width)) 
         if (cell) {
           this.currentCell = cell
         } else {
@@ -421,6 +417,14 @@
       },
       clearSelectedUnits () {
         this.selectedUnits = []
+      },
+      stopSelectedUnit () {
+        this.socket.emit("action", {
+          "index": this.indexAction,
+          "kind": "STOP",
+          "uuid": this.gameData.uuid,
+          "unit_uuids": this.selectedUnits.map(u => u.uuid)
+        })
       },
       addUnitToGroup (group) {
         if (this.groups[group] === undefined) {
@@ -459,19 +463,80 @@
       moveUnit () {
         EventBus.$emit("move-units", this.currentCell)
       },
+      getCell(x, y) {
+        return this.knowCells.find(c => c.x === x && c.y === y) ||
+          { x: x, y: y, index: x + (y * this.gameData.width) }
+      },
+      getAccessibleCell(cell) {
+        let cells = []
+
+        // NORTH
+        if (cell.y > 0 && cell.y < this.gameData.height) {
+          cells.push(this.getCell(cell.x, cell.y - 1))
+        }
+        // NORTH WEAST
+        if (cell.y > 0 && cell.y < this.gameData.height &&
+              cell.x > 0 && cell.x < this.gameData.width) {
+          cells.push(this.getCell(cell.x - 1, cell.y - 1))
+        }
+        // ODD
+        if (x % 2 == 0) {
+          // NORTH EAST
+          // if (cell.y > 0 && cell.y < this.gameData.height &&
+          //       cell.x > 0 && cell.x < this.gameData.width) {
+          //   cells.push(this.getCell(cell.x + 1, cell.y - 1))
+          // }
+          // NORTH WEAST
+          if (cell.y > 0 && cell.y < this.gameData.height &&
+                cell.x > 0 && cell.x < this.gameData.width) {
+            cells.push(this.getCell(cell.x - 1, cell.y - 1))
+          }
+        // EVEN
+        } else {
+          // NORTH EAST
+          // if (cell.y > 0 && cell.y < this.gameData.height &&
+          //       cell.x > 0 && cell.x < this.gameData.width) {
+          //   cells.push(this.getCell(cell.x + 1, cell.y - 1))
+          // }
+          // NORTH WEAST
+          if (cell.y > 0 && cell.y < this.gameData.height &&
+                cell.x > 0 && cell.x < this.gameData.width) {
+            cells.push(this.getCell(cell.x - 1, cell.y - 1))
+          }
+        }
+        // SOUTH
+        if (cell.y >= 0 && cell.y < this.gameData.height - 1) {
+          cells.push(this.getCell(cell.x, cell.y + 1))
+        }
+        // SOUTH WEAST
+        if (cell.y > 0 && cell.y < this.gameData.height) {
+          cells.push(this.getCell(cell.x - 1, cell.y + 1))
+        }
+        // SOUTH EAST
+        if (cell.y > 0 && cell.y < this.gameData.height) {
+          cells.push(this.getCell(cell.x + 1, cell.y + 1))
+        }
+        return cells
+      }
+    },
+    computed: {
+      knowCells () {
+        return this.playerData.vision_cells.concat(this.playerData.mapped_cells)
+      }
     },
     watch: {
       selectedUnits: function (val) {
         this.pathCell = []
         for(const units of this.selectedUnits) {
-          for (const cell of units.destinations) {
-
+          for (let i = 0; i < units.destinations.length; i++) {
+            let cell = units.destinations[i]
             if (!this.pathCell.find(c => c.x === cell.x && c.y === cell.y)) {
               this.pathCell.push(cell)
             }
+            console.log(this.getAccessibleCell(cell))
+            this.pathCell = this.pathCell.concat(this.getAccessibleCell(cell))
           }
         }
-        console.log(this.pathCell)
       },
     },
     async created () {
@@ -483,6 +548,9 @@
         if (index !== -1) {
           this.selectedUnits.splice(index, 1)
         }
+      })
+      EventBus.$on('stop-selected-unit', () => {
+        this.stopSelectedUnit()
       })
       EventBus.$on('clear-unit-selection', () => {
         this.clearSelectedUnits()

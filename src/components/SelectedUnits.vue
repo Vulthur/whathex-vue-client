@@ -39,12 +39,7 @@ name: "selectedUnits",
       EventBus.$emit('remove-unit-selection', unit)
     },
     stopUnits () {
-      this.socket.emit("action", {
-        "index": this.indexAction,
-        "kind": "STOP",
-        "uuid": this.gameData.uuid,
-        "unit_uuids": this.selectedUnits.map(u => u.uuid)
-      })
+      EventBus.$emit('stop-selected-unit')
       EventBus.$emit('increment-index-action')
     },
     selectUnits (group) {
