@@ -38,6 +38,7 @@ export default {
 <style lang="scss" scoped>
   .hexagones {
     position: absolute;
+    pointer-events: none;
   }
   #model-hexa {
     display: none;

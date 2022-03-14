@@ -10,16 +10,14 @@
             height: `${gameData.height * width + (offset * 2) + (width / 2)}px`,
           }">
         <!-- DEFAULT CELL -->
-        <template v-for="(i, indexI) in gameData.height">
-          <template v-for="(j, indexJ) in gameData.width">
-            <empty-cell :key="`${i}-${j}`"
-              :selected="currentCell && (indexJ + (indexI * gameData.width)) === currentCell.index"
-              :cellWidth="width"
-              :cellHeight="height"
-              :offset="offset"
-              :cell="{x: indexJ, y: indexI, index: indexJ + (indexI * gameData.width)}">
-            </empty-cell>
-          </template>
+        <template v-for="(cell) in emptyCells">
+          <empty-cell :key="cell.index"
+            :selected="currentCell && cell.index === currentCell.index"
+            :cellWidth="width"
+            :cellHeight="height"
+            :offset="offset"
+            :cell="cell">
+          </empty-cell>
         </template>
         <!-- Vision CELL -->
         <template v-for="cell in visionCells">
@@ -50,7 +48,7 @@
               :cellWidth="width"
               :cellHeight="height"
               :offset="offset"
-              :cell="{x: cell.x, y: cell.y, index: cell.x + (cell.y * gameData.width)}">
+              :cell="cell">
             </path-cell>
           </template>
           <template v-for="(unit, indexUnit) in selectedUnits">
@@ -61,7 +59,7 @@
                   viewBox="0 0 20 20" :width="20" :height="20"
                   :style="{
                     left: `${destination.x * height + offset + height / 2}px`,
-                    top: destination.x % 2 == 0 
+                    top: destination.x % 2 == 0
                       ? `${destination.y * width + (width / 2) + offset}px` 
                       : `${(destination.y * width) + width + offset}px`,
                   }">
@@ -182,6 +180,7 @@ export default {
     showPath: Boolean,
     capital: Object,
     mappedCells: Array,
+    emptyCells: Array,
     pathCell: Array,
     visionCells: Array,
     currentCell: Object,

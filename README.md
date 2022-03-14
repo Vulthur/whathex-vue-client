@@ -16,3 +16,5 @@ Find a way to simulate all event and define all the application
 What should we draw beetwen two cells for destinations ?
 
 First only draw path for selected destination
+
+Need to generate empty cell server side ?

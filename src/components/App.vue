@@ -54,6 +54,7 @@
         <board
           :mappedCells="playerData.mapped_cells"
           :visionCells="playerData.vision_cells"
+          :emptyCells="emptyCells"
           :capital="playerData.capital"
           :selectedUnits="selectedUnits"
           :currentCell="currentCell"
@@ -209,6 +210,7 @@
         message: '',
         selectedUnits: [],
         indexAction: 0,
+        emptyCells: [],
         groups: {
           "1": [],
           "2": [],
@@ -274,7 +276,6 @@
           this.message = event.message
         })
         this.socket.on('winner', (data) => {
-          console.log(data)
           this.winner = data
         })
         this.socket.on('player', (data) => {
@@ -288,6 +289,9 @@
           if (this.currentCell && this.currentCell.soil) {
             this.currentCell = this.knowCells.find(cell => cell.index === this.currentCell.index) 
           }
+
+          this.defineEmptyCell()
+
           // refresh the selected unit
           for (let [index, unit] of this.selectedUnits.entries()) {
             let foundIndex = -1
@@ -314,10 +318,23 @@
         })
         this.socket.on('game-data', (data) => {
           this.gameData = data
+          this.defineEmptyCell()
           this.$nextTick(() => {
             EventBus.$emit('go-to-capital')
           });
         })
+      },
+      defineEmptyCell () {
+        this.emptyCells = []
+        if (this.gameData) {
+          for (let j = 0; j < this.gameData.height; j++) {
+            for (let i = 0; i < this.gameData.width; i++) {
+              if (!this.knowCells.find(c => c.x === i && c.y === j)) {
+                this.emptyCells.push({x: i, y: j, index: i + (j * this.gameData.width)})
+              }
+            }
+          }
+        }
       },
       play () {
         if (this.socket) {
@@ -464,57 +481,97 @@
         EventBus.$emit("move-units", this.currentCell)
       },
       getCell(x, y) {
-        return this.knowCells.find(c => c.x === x && c.y === y) ||
-          { x: x, y: y, index: x + (y * this.gameData.width) }
+        return this.allCells.find(c => c.x === x && c.y === y)
       },
       getAccessibleCell(cell) {
         let cells = []
 
         // NORTH
-        if (cell.y > 0 && cell.y < this.gameData.height) {
-          cells.push(this.getCell(cell.x, cell.y - 1))
-        }
-        // NORTH WEAST
         if (cell.y > 0 && cell.y < this.gameData.height &&
-              cell.x > 0 && cell.x < this.gameData.width) {
-          cells.push(this.getCell(cell.x - 1, cell.y - 1))
+              cell.x >= 0 && cell.x < this.gameData.width) {
+          let c = this.getCell(cell.x, cell.y - 1)
+          if (!c.soil || (c.soil && c.soil.move_speed)) {
+            cells.push(c)
+          }
         }
+
+        // SOUTH
+        if (cell.y >= 0 && cell.y < this.gameData.height - 1 &&
+              cell.x >= 0 && cell.x < this.gameData.width) {
+          let c = this.getCell(cell.x, cell.y + 1)
+          if (!c.soil || (c.soil && c.soil.move_speed)) {
+            cells.push(c)
+          }
+        }
+
         // ODD
-        if (x % 2 == 0) {
+        if (cell.x % 2 == 0) {
           // NORTH EAST
-          // if (cell.y > 0 && cell.y < this.gameData.height &&
-          //       cell.x > 0 && cell.x < this.gameData.width) {
-          //   cells.push(this.getCell(cell.x + 1, cell.y - 1))
-          // }
+          if (cell.y > 0 && cell.y < this.gameData.height &&
+              cell.x >= 0 && cell.x < this.gameData.width - 1) {
+            let c = this.getCell(cell.x + 1, cell.y - 1)
+            if (!c.soil || (c.soil && c.soil.move_speed)) {
+              cells.push(c)
+            }
+          }
           // NORTH WEAST
           if (cell.y > 0 && cell.y < this.gameData.height &&
-                cell.x > 0 && cell.x < this.gameData.width) {
-            cells.push(this.getCell(cell.x - 1, cell.y - 1))
+              cell.x > 0 && cell.x < this.gameData.width) {
+            let c = this.getCell(cell.x - 1, cell.y - 1)
+            if (!c.soil || (c.soil && c.soil.move_speed)) {
+              cells.push(c)
+            }
+          }
+          // SOUTH EAST
+          if (cell.y >= 0 && cell.y < this.gameData.height &&
+              cell.x >= 0 && cell.x < this.gameData.width - 1) {
+                let c = this.getCell(cell.x + 1, cell.y)
+            if (!c.soil || (c.soil && c.soil.move_speed)) {
+              cells.push(c)
+            }
+          }
+          // SOUTH WEAST
+          if (cell.y >= 0 && cell.y < this.gameData.height &&
+              cell.x > 0 && cell.x < this.gameData.width) {
+            let c = this.getCell(cell.x - 1, cell.y)
+            if (!c.soil || (c.soil && c.soil.move_speed)) {
+              cells.push(c)
+            }
           }
         // EVEN
         } else {
           // NORTH EAST
-          // if (cell.y > 0 && cell.y < this.gameData.height &&
-          //       cell.x > 0 && cell.x < this.gameData.width) {
-          //   cells.push(this.getCell(cell.x + 1, cell.y - 1))
-          // }
-          // NORTH WEAST
           if (cell.y > 0 && cell.y < this.gameData.height &&
-                cell.x > 0 && cell.x < this.gameData.width) {
-            cells.push(this.getCell(cell.x - 1, cell.y - 1))
+                cell.x >= 0 && cell.x < this.gameData.width - 1) {
+            let c = this.getCell(cell.x + 1, cell.y)
+            if (!c.soil || (c.soil && c.soil.move_speed)) {
+              cells.push(c)
+            }
           }
-        }
-        // SOUTH
-        if (cell.y >= 0 && cell.y < this.gameData.height - 1) {
-          cells.push(this.getCell(cell.x, cell.y + 1))
-        }
-        // SOUTH WEAST
-        if (cell.y > 0 && cell.y < this.gameData.height) {
-          cells.push(this.getCell(cell.x - 1, cell.y + 1))
-        }
-        // SOUTH EAST
-        if (cell.y > 0 && cell.y < this.gameData.height) {
-          cells.push(this.getCell(cell.x + 1, cell.y + 1))
+          // NORTH WEAST
+          if (cell.y >= 0 && cell.y < this.gameData.height &&
+                cell.x > 0 && cell.x < this.gameData.width) {
+            let c = this.getCell(cell.x - 1, cell.y)
+            if (!c.soil || (c.soil && c.soil.move_speed)) {
+              cells.push(c)
+            }
+          }
+          // SOUTH EAST
+          if (cell.y >= 0 && cell.y < this.gameData.height - 1 &&
+              cell.x >= 0 && cell.x < this.gameData.width - 1) {
+            let c = this.getCell(cell.x + 1, cell.y + 1)
+            if (!c.soil || (c.soil && c.soil.move_speed)) {
+              cells.push(c)
+            }
+          }
+          // SOUTH WEAST
+          if (cell.y >= 0 && cell.y < this.gameData.height - 1 &&
+            cell.x > 0 && cell.x < this.gameData.width) {
+            let c = this.getCell(cell.x - 1, cell.y + 1)
+            if (!c.soil || (c.soil && c.soil.move_speed)) {
+              cells.push(c)
+            }
+          }
         }
         return cells
       }
@@ -522,19 +579,79 @@
     computed: {
       knowCells () {
         return this.playerData.vision_cells.concat(this.playerData.mapped_cells)
+      },
+      allCells () {
+        return this.playerData.vision_cells.concat(this.playerData.mapped_cells).concat(this.emptyCells)
       }
     },
     watch: {
       selectedUnits: function (val) {
         this.pathCell = []
-        for(const units of this.selectedUnits) {
-          for (let i = 0; i < units.destinations.length; i++) {
-            let cell = units.destinations[i]
-            if (!this.pathCell.find(c => c.x === cell.x && c.y === cell.y)) {
-              this.pathCell.push(cell)
+        for(const unit of this.selectedUnits) {
+          for (let i = 0; i < unit.destinations.length; i++) {
+            const goal = this.getCell(unit.destinations[i].x, unit.destinations[i].y)
+            const start = this.getCell(unit.cell.x, unit.cell.y)
+
+            const frontier = []
+            frontier.push({cell: start, priority: 0})
+            
+            const cameFrom = new Map();
+            const costSoFar = new Map();
+
+            cameFrom.set(start, null)
+            costSoFar.set(start, 0)
+
+            while (frontier.length > 0) {
+              
+              // debugger
+              const current = frontier.shift()
+
+              if (current.cell.x === goal.x && current.cell.y === goal.y) {
+                break
+              }
+              
+              for (let next of this.getAccessibleCell(current.cell)) {
+                let cost = next.soil ? next.soil.move_speed : 1
+                const costBuilding = next.building ? next.building.move_speed : 0
+                cost += costBuilding
+                cost = cost || 1
+
+                const newCost = costSoFar.get(current.cell) + cost
+
+                let costOfNext = costSoFar.get(next)
+                if (!costOfNext || newCost < costOfNext) {
+                  costSoFar.set(next, newCost)
+                  cameFrom.set(next, current.cell)
+
+                  // TODO INFINITE LOOP Ref on MAp is not the correct one
+                  let insert = false
+                  for (const i in frontier) {
+                    if (frontier[i].priority > newCost) {
+                      frontier.splice(i, 0, {cell: next, priority: newCost})
+                      insert = true
+                    }
+                  }
+                  if (!insert || frontier.length === 0) {
+                    frontier.push({cell: next, priority: newCost})
+                  }
+                }
+              }
             }
-            console.log(this.getAccessibleCell(cell))
-            this.pathCell = this.pathCell.concat(this.getAccessibleCell(cell))
+            
+            // TODO INFINYT LOOP !!!!
+            let inPath = goal
+            console.log(cameFrom.get(inPath))
+            while (inPath) {
+              if (!this.pathCell.find(c => c.x === inPath.x && c.y === inPath.y)) {
+                this.pathCell.push(inPath)
+              }
+              inPath = cameFrom.get(inPath)
+              console.log(inPath)
+            }
+
+            // console.log(this.pathCell)
+
+            // this.pathCell = this.pathCell.concat(this.getAccessibleCell(goal))
           }
         }
       },
